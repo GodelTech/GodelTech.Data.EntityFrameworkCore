@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Aurochses.Xunit;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests

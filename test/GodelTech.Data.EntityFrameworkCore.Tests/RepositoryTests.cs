@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aurochses.Xunit;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -208,7 +209,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             ValidateQueryParametersMemberData(queryable, countQueryable);
 
             // Arrange & Act & Assert
-            ObjectAssert.ValueEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), _fixture.UnitOfWork.FakeEntityRepository.GetList<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), _fixture.UnitOfWork.FakeEntityRepository.GetList<FakeModel>(_fixture.DataMapper, queryParameters));
         }
 
         #endregion
@@ -298,7 +299,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             };
 
             // Act & Assert
-            ObjectAssert.ValueEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList(queryParameters));
+            ObjectAssert.DeepEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList(queryParameters));
         }
 
         [Theory]
@@ -321,7 +322,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             };
 
             // Act & Assert
-            ObjectAssert.ValueEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList<FakeModel>(_fixture.DataMapper, queryParameters));
         }
 
         #endregion

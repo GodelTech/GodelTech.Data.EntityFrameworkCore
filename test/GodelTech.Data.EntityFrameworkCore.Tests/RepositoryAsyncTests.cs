@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Aurochses.Xunit;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -27,7 +28,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             ValidateQueryParametersMemberData(queryable, countQueryable);
 
             // Arrange & Act & Assert
-            //ObjectAssert.ValueEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), await _fixture.UnitOfWork.FakeEntityRepository.GetListAsync<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), await _fixture.UnitOfWork.FakeEntityRepository.GetListAsync<FakeModel>(_fixture.DataMapper, queryParameters));
         }
 
         #endregion
@@ -54,7 +55,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             };
 
             // Act & Assert
-            ObjectAssert.ValueEquals(expectedPagedResult, await _fixture.UnitOfWork.FakeEntityRepository.GetPagedListAsync(queryParameters));
+            ObjectAssert.DeepEquals(expectedPagedResult, await _fixture.UnitOfWork.FakeEntityRepository.GetPagedListAsync(queryParameters));
         }
 
         [Theory]
@@ -77,7 +78,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             };
 
             // Act & Assert
-            ObjectAssert.ValueEquals(expectedPagedResult, await _fixture.UnitOfWork.FakeEntityRepository.GetPagedListAsync<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(expectedPagedResult, await _fixture.UnitOfWork.FakeEntityRepository.GetPagedListAsync<FakeModel>(_fixture.DataMapper, queryParameters));
         }
 
         #endregion
