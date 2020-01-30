@@ -222,7 +222,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange & Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(null));
             Assert.Equal("queryParameters", exception.ParamName);
-            Assert.Equal("Query Parameters can't be null.\r\nParameter name: queryParameters", exception.Message);
+            Assert.Equal("Query Parameters can't be null. (Parameter 'queryParameters')", exception.Message);
         }
 
         [Fact]
@@ -231,7 +231,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange & Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(new QueryParameters<FakeEntity, int> { Page = null }));
             Assert.Equal("Page", exception.ParamName);
-            Assert.Equal("Query Parameters Page can't be null.\r\nParameter name: Page", exception.Message);
+            Assert.Equal("Query Parameters Page can't be null. (Parameter 'Page')", exception.Message);
         }
 
         [Fact]
@@ -240,7 +240,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange & Act & Assert
             var exception = Assert.Throws<ArgumentException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(new QueryParameters<FakeEntity, int> { Page = new PageRule { Size = 0 } }));
             Assert.Equal("Page", exception.ParamName);
-            Assert.Equal("Query Parameters Page is not valid.\r\nParameter name: Page", exception.Message);
+            Assert.Equal("Query Parameters Page is not valid. (Parameter 'Page')", exception.Message);
         }
 
         [Theory]
