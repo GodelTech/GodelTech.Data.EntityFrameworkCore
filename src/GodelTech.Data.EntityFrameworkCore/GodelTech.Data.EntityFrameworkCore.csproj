@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageId>GodelTech.Data.EntityFrameworkCore</PackageId>
+    <VersionPrefix>1.0.0-rc.1</VersionPrefix>
+    <Authors>v.rodchenko</Authors>
+    <Company>Godel Technologies</Company>
+    <Description>Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.</Description>
+    <Copyright>Godel Technologies 2020</Copyright>
+    <PackageLicenseUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/wiki</PackageProjectUrl>
+    <PackageIconUrl>https://www.gravatar.com/avatar/839234621070de51e7b9cabd5ceee8fe?s=64</PackageIconUrl>
+    <RepositoryUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore</RepositoryUrl>
+    <PackageTags>Entity Framework Core Data UnitOfWork Repository Entity</PackageTags>
+
+    <!-- SonarQube needs this -->
+    <ProjectGuid>{00000000-0000-0000-0000-000000000001}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
