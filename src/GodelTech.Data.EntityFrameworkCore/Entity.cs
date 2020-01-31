@@ -27,12 +27,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
         public bool Equals(IEntity<TType> other)
         {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return Id.Equals(other.Id);
+            return other != null && Id.Equals(other.Id);
         }
 
         /// <summary>
@@ -42,10 +37,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            // ReSharper disable once UsePatternMatching
-            var item = obj as Entity<TType>;
-
-            if (item == null)
+            if (!(obj is Entity<TType> item))
             {
                 return false;
             }
