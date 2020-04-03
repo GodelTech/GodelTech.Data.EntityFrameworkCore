@@ -42,6 +42,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #region Dispose
@@ -74,7 +75,6 @@ namespace GodelTech.Data.EntityFrameworkCore
             // free managed resources 
             DisposeDbContext();
             _isDisposed = true;
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
