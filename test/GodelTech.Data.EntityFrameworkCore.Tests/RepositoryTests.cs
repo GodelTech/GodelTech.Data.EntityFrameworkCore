@@ -158,6 +158,30 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             Assert.NotNull(countQueryable);
         }
 
+        #region ValidateQueryParametersMemberData
+
+        [Fact]
+        public void ValidateQueryParametersMemberData_QueryableIsNull_CatchException()
+        {
+            // Arrange && Act
+            var exception = Assert.Throws<ArgumentNullException>(() => ValidateQueryParametersMemberData(null, new List<FakeEntity>().AsQueryable()));
+
+            // Assert
+            Assert.Equal("Value cannot be null. (Parameter 'queryable')", exception.Message);
+        }
+
+        [Fact]
+        public void ValidateQueryParametersMemberData_CountQueryableIsNull_CatchException()
+        {
+            // Arrange && Act
+            var exception = Assert.Throws<ArgumentNullException>(() => ValidateQueryParametersMemberData(new List<FakeEntity>().AsQueryable(), null));
+
+            // Assert
+            Assert.Equal("Value cannot be null. (Parameter 'countQueryable')", exception.Message);
+        }
+
+        #endregion
+
         #region Query
 
         [Theory]

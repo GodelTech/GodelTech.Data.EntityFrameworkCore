@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
 {
-    [ExcludeFromCodeCoverage]
     public class FakeRepository : Repository<FakeEntity, int>
     {
         public FakeRepository(DbContext dbContext)
@@ -12,8 +10,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
         {
 
         }
-
-        public DbSet<FakeEntity> ProtectedDbSet => DbSet;
 
         public IQueryable<FakeEntity> ProtectedQuery(QueryParameters<FakeEntity, int> queryParameters = null)
         {

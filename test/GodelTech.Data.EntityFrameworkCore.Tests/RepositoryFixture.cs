@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using AutoMapper;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
@@ -32,18 +31,11 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             UnitOfWork.FakeEntityRepository.Insert(new FakeEntity());
             UnitOfWork.FakeEntityRepository.Insert(new FakeEntity());
             UnitOfWork.Commit();
-
-            ExistingFakeEntity = UnitOfWork.FakeEntityRepository.GetList().First();
-            ExistingFakeModel = UnitOfWork.FakeEntityRepository.GetList<FakeModel>(DataMapper).First();
         }
 
         public FakeDataMapper DataMapper { get; }
 
         public FakeUnitOfWork UnitOfWork { get; }
-
-        public FakeEntity ExistingFakeEntity { get; }
-
-        public FakeModel ExistingFakeModel { get; }
 
         public void Dispose()
         {

@@ -27,8 +27,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var modelBuilder = new ModelBuilder(new ConventionSet());
             var entityTypeBuilder = modelBuilder.Entity<Entity<int>>();
 
-            var mockEntityTypeConfiguration = new Mock<EntityTypeConfiguration<Entity<int>, int>>(MockBehavior.Strict, "dbo");
-            mockEntityTypeConfiguration.Setup(m => m.Configure(entityTypeBuilder)).Verifiable();
+            var mockEntityTypeConfiguration = new Mock<FakeEntityTypeConfiguration>(MockBehavior.Strict, "dbo");
+            mockEntityTypeConfiguration.Setup(m => m.Configure(entityTypeBuilder)).CallBase().Verifiable();
 
             // Act
             mockEntityTypeConfiguration.Object.Configure(entityTypeBuilder);
