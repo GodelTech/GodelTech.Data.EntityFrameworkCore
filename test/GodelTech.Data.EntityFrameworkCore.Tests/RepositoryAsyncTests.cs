@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Aurochses.Xunit;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
@@ -9,6 +10,30 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
     public partial class RepositoryTests
     {
+        #region Get
+
+        [Theory]
+        [MemberData(nameof(QueryParametersMemberData))]
+        public async Task GetAsync_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        {
+            ValidateQueryParametersMemberData(queryable, countQueryable);
+
+            // Arrange & Act & Assert
+            Assert.Equal(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).FirstOrDefault(), await _fixture.UnitOfWork.FakeEntityRepository.GetAsync(queryParameters));
+        }
+
+        [Theory]
+        [MemberData(nameof(QueryParametersMemberData))]
+        public async Task GetTModelAsync_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        {
+            ValidateQueryParametersMemberData(queryable, countQueryable);
+
+            // Arrange & Act & Assert
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), await _fixture.UnitOfWork.FakeEntityRepository.GetAsync<FakeModel>(_fixture.DataMapper, queryParameters));
+        }
+
+        #endregion
+
         #region GetList
 
         [Theory]
@@ -125,10 +150,32 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             // Act
             var insertedEntity = await repository.InsertAsync(entity);
-            fakeDbContext.SaveChanges();
+            await fakeDbContext.SaveChangesAsync();
 
             // Assert
             Assert.Equal(entity.Id, insertedEntity.Id);
+        }
+
+        [Fact]
+        public async Task InsertAsync_NewEntitiesList_Inserted()
+        {
+            // Arrange
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(InsertAsync_NewEntitiesList_Inserted));
+            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
+            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+
+            var entities = new List<FakeEntity>
+            {
+                new FakeEntity(),
+                new FakeEntity()
+            };
+
+            // Act
+            await repository.InsertAsync(entities);
+            await fakeDbContext.SaveChangesAsync();
+
+            // Assert
+            Assert.Equal(await fakeDbContext.Set<FakeEntity>().CountAsync(), entities.Count);
         }
 
         #endregion

@@ -433,15 +433,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         }
 
         /// <summary>
-        /// Marks entity as deleted.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        protected void MarkAsDeleted(TEntity entity)
-        {
-            DbContext.Entry(entity).State = EntityState.Deleted;
-        }
-
-        /// <summary>
         /// Deletes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
@@ -452,19 +443,7 @@ namespace GodelTech.Data.EntityFrameworkCore
                 DbSet.Attach(entity);
             }
 
-            MarkAsDeleted(entity);
-
             DbSet.Remove(entity);
-        }
-
-        /// <summary>
-        /// Deletes the specified entity by id.
-        /// </summary>
-        /// <param name="id">Id of the entity.</param>
-        public virtual void Delete(TType id)
-        {
-            var entity = this.Get(x => x.Id.Equals(id));
-            Delete(entity);
         }
 
         /// <summary>
@@ -474,7 +453,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         public virtual void Delete(IEnumerable<TType> ids)
         {
             var entities = this.GetList(x => ids.Contains(x.Id));
-            DbSet.AttachRange(entities);
             DbSet.RemoveRange(entities);
         }
     }

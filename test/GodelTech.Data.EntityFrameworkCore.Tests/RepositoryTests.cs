@@ -190,6 +190,30 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
         #endregion
 
+        #region Get
+
+        [Theory]
+        [MemberData(nameof(QueryParametersMemberData))]
+        public void Get_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        {
+            ValidateQueryParametersMemberData(queryable, countQueryable);
+
+            // Arrange & Act & Assert
+            Assert.Equal(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).FirstOrDefault(), _fixture.UnitOfWork.FakeEntityRepository.Get(queryParameters));
+        }
+
+        [Theory]
+        [MemberData(nameof(QueryParametersMemberData))]
+        public void GetTModel_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        {
+            ValidateQueryParametersMemberData(queryable, countQueryable);
+
+            // Arrange & Act & Assert
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), _fixture.UnitOfWork.FakeEntityRepository.Get<FakeModel>(_fixture.DataMapper, queryParameters));
+        }
+
+        #endregion
+
         #region GetList
 
         [Theory]
@@ -393,6 +417,28 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             Assert.Equal(entity.Id, insertedEntity.Id);
         }
 
+        [Fact]
+        public void Insert_NewEntitiesList_Inserted()
+        {
+            // Arrange
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Insert_NewEntity_Inserted));
+            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
+            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+
+            var entities = new List<FakeEntity>
+            {
+                new FakeEntity(),
+                new FakeEntity()
+            };
+
+            // Act
+            repository.Insert(entities);
+            fakeDbContext.SaveChanges();
+
+            // Assert
+            Assert.Equal(fakeDbContext.Set<FakeEntity>().Count(), entities.Count);
+        }
+
         #endregion
 
         #region Update
@@ -464,6 +510,31 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             // Assert
             Assert.False(fakeDbContext.Set<FakeEntity>().Any(x => x.Id == id));
+        }
+
+        [Fact]
+        public void Delete_ExistingEntities_Deleted()
+        {
+            // Arrange
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Delete_ExistingEntity_Deleted));
+            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
+            fakeDbContext.AddRange(new List<FakeEntity>
+            {
+                new FakeEntity { Id = 1 },
+                new FakeEntity { Id = 2 },
+                new FakeEntity { Id = 3 }
+            });
+            fakeDbContext.SaveChanges();
+
+            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+
+            // Act
+            repository.Delete(new List<int> {2, 3});
+            fakeDbContext.SaveChanges();
+
+            // Assert
+            Assert.Equal(1, fakeDbContext.Set<FakeEntity>().Count());
+            Assert.Equal(1, fakeDbContext.Set<FakeEntity>().FirstOrDefault()?.Id);
         }
 
         #endregion
