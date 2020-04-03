@@ -57,7 +57,7 @@ stages:
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet restore from both Nuget and Azure Artifacts feeds'
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['Build.Reason'], 'PullRequest'))
         inputs:
           command: 'restore'
           projects: '**/*.csproj'
@@ -66,7 +66,7 @@ stages:
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet restore only from NuGet feed'
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.Reason'], 'PullRequest'))
         inputs:
           command: 'restore'
           projects: '**/*.csproj'
