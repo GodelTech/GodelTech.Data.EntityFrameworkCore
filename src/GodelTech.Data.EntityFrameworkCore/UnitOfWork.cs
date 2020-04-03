@@ -27,7 +27,8 @@ namespace GodelTech.Data.EntityFrameworkCore
 
         ~UnitOfWork()
         {
-            Dispose(false);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -42,7 +43,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         #region Dispose
