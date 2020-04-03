@@ -31,11 +31,11 @@ stages:
 
       - task: Bash@3
         displayName: 'Set Version Suffix'
+        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
         inputs:
           targetType: 'inline'
           script: |
             echo "##vso[task.setvariable variable=versionSuffix]ci-$BUILD_BUILDNUMBER"
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
       - task: SonarCloudPrepare@1
         displayName: 'Prepare analysis on SonarCloud'
@@ -56,7 +56,17 @@ stages:
           version: '3.x'
 
       - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore'
+        displayName: 'dotnet restore from Nuget and Azure Artifacts feeds'
+        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+          feedsToUse: 'select'
+          vstsFeed: '19324bbd-9baf-4407-b86d-3e7f0d145399/1574777e-9941-4b90-baa9-d9938266ac24'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore only from NuGet feed'
+        condition: and(succeeded(), (variables['Build.SourceBranch'], 'refs/heads/master'))
         inputs:
           command: 'restore'
           projects: '**/*.csproj'
