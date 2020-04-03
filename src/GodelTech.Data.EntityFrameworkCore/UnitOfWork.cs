@@ -25,6 +25,11 @@ namespace GodelTech.Data.EntityFrameworkCore
             _dbContext = dbContext;
         }
 
+        ~UnitOfWork()
+        {
+            Dispose(false);
+        }
+
         /// <summary>
         /// Gets the database context.
         /// </summary>
