@@ -73,7 +73,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var secondEntity = new Entity<int> { Id = id };
 
             // Act & Assert
-            Assert.True(firstEntity.Equals(secondEntity));
+            Assert.True(firstEntity.Equals(firstEntity, secondEntity));
         }
 
         [Fact]
@@ -81,19 +81,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange & Act & Assert
             Assert.False(_entity.Equals(new object()));
-        }
-
-        [Fact]
-        public void Equals_EntityAndEntityAsObject_True()
-        {
-            // Arrange
-            const int id = 1;
-
-            var firstEntity = new Entity<int> { Id = id };
-            var secondEntity = new Entity<int> { Id = id };
-
-            // Arrange & Act & Assert
-            Assert.True(firstEntity.Equals((object)secondEntity));
         }
 
         [Fact]
@@ -106,7 +93,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var secondEntity = new Entity<int> { Id = id };
 
             // Arrange & Act & Assert
-            Assert.Equal(firstEntity.GetHashCode(), secondEntity.GetHashCode());
+            Assert.Equal(firstEntity.GetHashCode(firstEntity), secondEntity.GetHashCode(secondEntity));
         }
 
         [Fact]
@@ -117,7 +104,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var secondEntity = new Entity<int> { Id = 2 };
 
             // Arrange & Act & Assert
-            Assert.NotEqual(firstEntity.GetHashCode(), secondEntity.GetHashCode());
+            Assert.NotEqual(firstEntity.GetHashCode(firstEntity), secondEntity.GetHashCode(secondEntity));
         }
     }
 }
