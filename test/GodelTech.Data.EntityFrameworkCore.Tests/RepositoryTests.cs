@@ -269,8 +269,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange & Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(null));
-            Assert.Equal("queryParameters", exception.ParamName);
-            Assert.Equal("Query Parameters can't be null. (Parameter 'queryParameters')", exception.Message);
+            Assert.Equal("QueryParameters", exception.ParamName);
+            Assert.Equal("Query Parameters can't be null. (Parameter 'QueryParameters')", exception.Message);
         }
 
         [Fact]
