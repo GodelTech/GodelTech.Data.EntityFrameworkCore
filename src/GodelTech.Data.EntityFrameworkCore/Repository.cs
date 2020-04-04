@@ -185,13 +185,13 @@ namespace GodelTech.Data.EntityFrameworkCore
         protected virtual IQueryable<TEntity> PagedResultQuery(QueryParameters<TEntity, TType> queryParameters)
         {
             if (queryParameters == null)
-                throw new ArgumentNullException(nameof(queryParameters));
+                throw new ArgumentNullException(nameof(queryParameters), "Query Parameters can't be null.");
 
             if (queryParameters.Page == null)
-                throw new ArgumentNullException(nameof(queryParameters.Page));
+                throw new ArgumentNullException(nameof(queryParameters.Page), "Query Parameters Page can't be null.");
 
             if (!queryParameters.Page.IsValid)
-                throw new ArgumentException("Query Parameters Page is not valid.");
+                throw new ArgumentException("Query Parameters Page is not valid.", nameof(queryParameters.Page));
 
             return Query(queryParameters);
         }
