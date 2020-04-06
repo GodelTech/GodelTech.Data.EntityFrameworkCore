@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GodelTech.Demo.Business", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GodelTech.Demo.WebApi", "demo\WebApi\src\GodelTech.Demo.WebApi\GodelTech.Demo.WebApi.csproj", "{4EC38DD1-3BA2-425C-9DB3-958F57F6DE81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodelTech.Demo.Database", "demo\Database\src\GodelTech.Demo.Database\GodelTech.Demo.Database.csproj", "{E3267A75-A91C-4371-AC84-206AE7485477}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodelTech.Demo.Database", "demo\Database\src\GodelTech.Demo.Database\GodelTech.Demo.Database.csproj", "{93873D0A-8F66-41C6-BABD-07CFCB31F825}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,10 @@ Global
 		{4EC38DD1-3BA2-425C-9DB3-958F57F6DE81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EC38DD1-3BA2-425C-9DB3-958F57F6DE81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EC38DD1-3BA2-425C-9DB3-958F57F6DE81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3267A75-A91C-4371-AC84-206AE7485477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3267A75-A91C-4371-AC84-206AE7485477}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3267A75-A91C-4371-AC84-206AE7485477}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3267A75-A91C-4371-AC84-206AE7485477}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93873D0A-8F66-41C6-BABD-07CFCB31F825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93873D0A-8F66-41C6-BABD-07CFCB31F825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93873D0A-8F66-41C6-BABD-07CFCB31F825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93873D0A-8F66-41C6-BABD-07CFCB31F825}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,7 +60,7 @@ Global
 		{8980A325-7DBE-4BD4-921F-3A5C75C4DDEC} = {8B7EF641-0841-40C4-9E55-5CCB93D87A92}
 		{BBF6F4E2-34C1-4C52-BDD8-E90651E35C6D} = {8B7EF641-0841-40C4-9E55-5CCB93D87A92}
 		{4EC38DD1-3BA2-425C-9DB3-958F57F6DE81} = {8B7EF641-0841-40C4-9E55-5CCB93D87A92}
-		{E3267A75-A91C-4371-AC84-206AE7485477} = {8B7EF641-0841-40C4-9E55-5CCB93D87A92}
+		{93873D0A-8F66-41C6-BABD-07CFCB31F825} = {8B7EF641-0841-40C4-9E55-5CCB93D87A92}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {533FE611-B026-4B9F-A3E1-883C2034CB0B}
