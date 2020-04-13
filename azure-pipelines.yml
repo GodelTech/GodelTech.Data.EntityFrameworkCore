@@ -24,6 +24,6 @@ stages:
   parameters:
     buildConfiguration: 'Release'
     internalFeed: '19324bbd-9baf-4407-b86d-3e7f0d145399/1574777e-9941-4b90-baa9-d9938266ac24'
-    packDirectory: '$(Build.ArtifactStagingDirectory)/packages'
+    artifactPackDirectory: 'packages'
     sonarCloudOrganizationName: 'godeltech'
     sourceBranch: 'master'
