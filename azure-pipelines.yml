@@ -17,8 +17,8 @@ resources:
       name: 'GodelTech/Yaml.Common'
       ref: 'refs/heads/master'
 
-stages:
-- template: templates/nuget.yml@GodelTech
+extends:
+  template: templates/nuget.yml@GodelTech
   parameters:
     artifactPackDirectory: 'packages'
     buildConfiguration: 'Release'
