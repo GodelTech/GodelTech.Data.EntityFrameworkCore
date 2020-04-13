@@ -21,10 +21,10 @@ variables:
 
 resources:
   repositories:
-    - repository: Yaml.Common
+    - repository: godeltech
       type: github
       endpoint: github
-      name: GodelTech/Yaml.Common
+      name: godeltech/Yaml.Common
 
 stages:
 - stage: Build
@@ -44,7 +44,7 @@ stages:
           script: |
             echo "##vso[task.setvariable variable=versionSuffix]ci-$BUILD_BUILDNUMBER"
 
-      - template: templates/nuget.yml@Yaml.Common
+      - template: templates/nuget.yml@godeltech
         parameters:
           sonarCloudOrganizationName: '$(sonarCloudOrganizationName)'
 
