@@ -23,6 +23,7 @@ resources:
   repositories:
     - repository: Yaml.Common
       type: github
+      endpoint: github
       name: Yaml.Common
 
 stages:
