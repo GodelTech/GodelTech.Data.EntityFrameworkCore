@@ -24,7 +24,7 @@ resources:
     - repository: Yaml.Common
       type: github
       endpoint: github
-      name: Yaml.Common
+      name: GodelTech/Yaml.Common
 
 stages:
 - stage: Build
