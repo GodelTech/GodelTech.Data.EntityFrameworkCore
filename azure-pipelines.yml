@@ -16,8 +16,9 @@ resources:
   repositories:
     - repository: GodelTech
       type: github
-      endpoint: godeltech
-      name: GodelTech/Yaml.Common
+      endpoint: "godeltech"
+      name: "GodelTech/Yaml.Common"
+      ref: "refs/heads/master"
 
 stages:
 - template: templates/nuget.yml@GodelTech
