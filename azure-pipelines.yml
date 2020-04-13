@@ -43,7 +43,7 @@ stages:
           script: |
             echo "##vso[task.setvariable variable=versionSuffix]ci-$BUILD_BUILDNUMBER"
 
-      - template: templates/nuget.yml
+      - template: nuget.yml@templates
         parameters:
           sonarCloudOrganizationName: '$(sonarCloudOrganizationName)'
 
