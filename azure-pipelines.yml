@@ -14,11 +14,6 @@ pr:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  buildConfiguration: Release
-  sonarCloudOrganizationName: godeltech
-  packDirectory: packages
-
 resources:
   repositories:
     - repository: GodelTech
@@ -27,116 +22,12 @@ resources:
       name: GodelTech/Yaml.Common
 
 stages:
-- stage: Build
-  displayName: 'Build'
-  variables:
-    versionSuffix: ''
-  jobs:
-    - job: Build
-      displayName: 'Build'
-      steps:
-
-      - task: Bash@3
-        displayName: 'Set Version Suffix'
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "##vso[task.setvariable variable=versionSuffix]ci-$BUILD_BUILDNUMBER"
-
-      - template: templates/nuget.yml@GodelTech
-        parameters:
-          sonarCloudOrganizationName: '$(sonarCloudOrganizationName)'
-
-      - task: UseDotNet@2
-        displayName: 'Use .NET Core SDK'
-        inputs:
-          packageType: 'sdk'
-          version: '3.x'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore from both Nuget and Azure Artifacts feeds'
-        condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['Build.Reason'], 'PullRequest'))
-        inputs:
-          command: 'restore'
-          projects: '**/*.csproj'
-          feedsToUse: 'select'
-          vstsFeed: '19324bbd-9baf-4407-b86d-3e7f0d145399/1574777e-9941-4b90-baa9-d9938266ac24'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore only from NuGet feed'
-        condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.Reason'], 'PullRequest'))
-        inputs:
-          command: 'restore'
-          projects: '**/*.csproj'
-          feedsToUse: 'select'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet build'
-        inputs:
-          command: 'build'
-          projects: '**/*.csproj'
-          arguments: '--configuration $(buildConfiguration) /p:VersionSuffix="$(versionSuffix)"'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet test'
-        inputs:
-          command: 'test'
-          projects: '**/*[Tt]ests/*.csproj'
-          arguments: '--configuration $(buildConfiguration) --settings $(System.DefaultWorkingDirectory)/CodeCoverage.runsettings --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Install ReportGenerator tool'
-        inputs:
-          command: 'custom'
-          custom: 'tool'
-          arguments: 'install --tool-path . dotnet-reportgenerator-globaltool'
-
-      - script: ./reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"Cobertura"
-        displayName: 'Create reports'
-
-      - task: PublishCodeCoverageResults@1
-        displayName: 'Publish code coverage'
-        inputs:
-          codeCoverageTool: 'Cobertura'
-          summaryFileLocation: '$(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml'
-
-      # Temp solution because of issue with SonarCloud
-      - task: UseDotNet@2
-        displayName: 'Use .NET Core SDK 2.2.x for SonarCloud'
-        inputs:
-          packageType: 'sdk'
-          version: '2.2.x'
-
-      - task: SonarCloudAnalyze@1
-        displayName: 'Run Code Analysis'
-
-      - task: SonarCloudPublish@1
-        displayName: 'Publish Quality Gate Result'
-        inputs:
-          pollingTimeoutSec: '300'
-
-      - task: sonarcloud-buildbreaker@2
-        displayName: 'Break build on quality gate failure'
-        inputs:
-          SonarCloud: 'SonarCloud'
-          organization: '$(sonarCloudOrganizationName)'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Pack .NET Core NuGet packages'
-        inputs:
-          command: 'pack'
-          packagesToPack: '**/*.csproj'
-          buildProperties: 'VersionSuffix="$(versionSuffix)"'
-          packDirectory: '$(Build.ArtifactStagingDirectory)/$(packDirectory)'
-          nobuild: true
-          versioningScheme: 'off'
-
-      - task: PublishPipelineArtifact@1
-        displayName: 'Publish Pipeline Artifact: NuGet Packages'
-        inputs:
-          path: '$(Build.ArtifactStagingDirectory)/$(packDirectory)'
-          artifact: 'NuGet Packages'
+- template: templates/nuget.yml@GodelTech
+  parameters:
+    sonarCloudOrganizationName: 'godeltech'
+    sourceBranch: 'master'
+    buildConfiguration: 'Release'
+    packDirectory: packages
 
 - stage: Artifacts
   displayName: 'Artifacts'
