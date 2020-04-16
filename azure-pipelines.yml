@@ -18,7 +18,7 @@ resources:
       ref: 'refs/heads/master'
 
 extends:
-  template: '.NetCore/nuget.yml@GodelTech'
+  template: 'dotNetCore/nuget.yml@GodelTech'
   parameters:
     artifactPackDirectory: 'packages'
     buildConfiguration: 'Release'
