@@ -22,6 +22,44 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         }
 
         [Fact]
+        public void Commit_InsertNewEntity_AffectedOneRow()
+        {
+            // Arrange
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_InsertNewEntity_AffectedOneRow));
+            var unitOfWork = new FakeUnitOfWork(
+                dbContext => new FakeRepository(dbContext),
+                dbContextOptionsBuilder.Options,
+                "dbo"
+            );
+
+            var entity = new FakeEntity();
+
+            unitOfWork.FakeEntityRepository.Insert(entity);
+
+            // Act & Assert
+            Assert.Equal(1, unitOfWork.Commit());
+        }
+
+        [Fact]
+        public void Commit_UpdateNonexistentEntity_DataStorageException()
+        {
+            // Arrange
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_UpdateNonexistentEntity_DataStorageException));
+            var unitOfWork = new FakeUnitOfWork(
+                dbContext => new FakeRepository(dbContext),
+                dbContextOptionsBuilder.Options,
+                "dbo"
+            );
+
+            var entity = new FakeEntity { Id = -1 };
+
+            unitOfWork.FakeEntityRepository.Update(entity);
+
+            // Act & Assert
+            Assert.Throws<DataStorageException>(() => unitOfWork.Commit());
+        }
+
+        [Fact]
         public void Dispose_UnitOfWork_Success()
         {
             // Arrange
@@ -78,44 +116,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             // Assert
             Assert.NotNull(unitOfWork.FakeEntityRepository);
-        }
-
-        [Fact]
-        public void Commit_InsertNewEntity_AffectedOneRow()
-        {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_InsertNewEntity_AffectedOneRow));
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext),
-                dbContextOptionsBuilder.Options,
-                "dbo"
-            );
-
-            var entity = new FakeEntity();
-
-            unitOfWork.FakeEntityRepository.Insert(entity);
-
-            // Act & Assert
-            Assert.Equal(1, unitOfWork.Commit());
-        }
-
-        [Fact]
-        public void Commit_UpdateNonexistentEntity_DataStorageException()
-        {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_UpdateNonexistentEntity_DataStorageException));
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext),
-                dbContextOptionsBuilder.Options,
-                "dbo"
-            );
-
-            var entity = new FakeEntity { Id = -1 };
-
-            unitOfWork.FakeEntityRepository.Update(entity);
-
-            // Act & Assert
-            Assert.Throws<DataStorageException>(() => unitOfWork.Commit());
         }
     }
 }
