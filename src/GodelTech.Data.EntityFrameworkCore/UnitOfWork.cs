@@ -11,7 +11,6 @@ namespace GodelTech.Data.EntityFrameworkCore
     /// <seealso cref="IUnitOfWork" />
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _dbContext;
         private readonly IDictionary<Type, object> _repositories;
         private bool _isDisposed;
 
@@ -22,9 +21,12 @@ namespace GodelTech.Data.EntityFrameworkCore
         public UnitOfWork(DbContext dbContext)
         {
             _repositories = new Dictionary<Type, object>();
-            _dbContext = dbContext;
+            DbContext = dbContext;
         }
 
+        /// <summary>
+        /// Destructor
+        /// </summary>
         ~UnitOfWork()
         {
             Dispose(false);
@@ -34,7 +36,73 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Gets the database context.
         /// </summary>
         /// <value>The database context.</value>
-        protected DbContext DbContext => _dbContext;
+        protected DbContext DbContext { get; }
+
+        /// <summary>
+        /// Commits all changes on the DB.
+        /// </summary>
+        /// <returns>Number of rows affected.</returns>
+        /// <exception cref="DataStorageException"></exception>
+        public virtual int Commit()
+        {
+            int cnt;
+
+            try
+            {
+                cnt = DbContext.SaveChanges();
+            }
+            catch (DbUpdateException exception)
+            {
+                throw new DataStorageException(exception);
+            }
+
+            return cnt;
+        }
+
+        /// <summary>
+        /// Asynchronously commits all changes on the DB.
+        /// </summary>
+        /// <returns>Number of rows affected.</returns>
+        /// <exception cref="DataStorageException"></exception>
+        public virtual async Task<int> CommitAsync()
+        {
+            int cnt;
+
+            try
+            {
+                cnt = await DbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exception)
+            {
+                throw new DataStorageException(exception);
+            }
+
+            return cnt;
+        }
+
+        /// <summary>
+        /// Registers repository instance.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TType">The type of the T type.</typeparam>
+        /// <param name="repository">The repository.</param>
+        protected void RegisterRepository<TEntity, TType>(IRepository<TEntity, TType> repository)
+            where TEntity : class, IEntity<TType>
+        {
+            _repositories[typeof(TEntity)] = repository;
+        }
+
+        /// <summary>
+        /// Gets the repository for specified entity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TType">The type of the T type.</typeparam>
+        /// <returns>IRepository{TEntity, TType}.</returns>
+        public virtual IRepository<TEntity, TType> GetRepository<TEntity, TType>()
+            where TEntity : class, IEntity<TType>
+        {
+            return (IRepository<TEntity, TType>)_repositories[typeof(TEntity)];
+        }
 
         /// <summary>
         /// Dispose object.
@@ -82,75 +150,9 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         private void DisposeDbContext()
         {
-            _dbContext?.Dispose();
+            DbContext?.Dispose();
         }
 
         #endregion
-
-        /// <summary>
-        /// Commits all changes on the DB.
-        /// </summary>
-        /// <returns>Number of rows affected.</returns>
-        /// <exception cref="DataStorageException"></exception>
-        public virtual int Commit()
-        {
-            int cnt;
-
-            try
-            {
-                cnt = _dbContext.SaveChanges();
-            }
-            catch (DbUpdateException exception)
-            {
-                throw new DataStorageException(exception);
-            }
-
-            return cnt;
-        }
-
-        /// <summary>
-        /// Asynchronously commits all changes on the DB.
-        /// </summary>
-        /// <returns>Number of rows affected.</returns>
-        /// <exception cref="DataStorageException"></exception>
-        public virtual async Task<int> CommitAsync()
-        {
-            int cnt;
-
-            try
-            {
-                cnt = await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException exception)
-            {
-                throw new DataStorageException(exception);
-            }
-
-            return cnt;
-        }
-
-        /// <summary>
-        /// Registers repository instance.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-        /// <typeparam name="TType">The type of the T type.</typeparam>
-        /// <param name="repository">The repository.</param>
-        protected void RegisterRepository<TEntity, TType>(IRepository<TEntity, TType> repository)
-            where TEntity : class, IEntity<TType>
-        {
-            _repositories[typeof(TEntity)] = repository;
-        }
-
-        /// <summary>
-        /// Gets the repository for specified entity type.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-        /// <typeparam name="TType">The type of the T type.</typeparam>
-        /// <returns>IRepository{TEntity, TType}.</returns>
-        protected virtual IRepository<TEntity, TType> GetRepository<TEntity, TType>()
-            where TEntity : class, IEntity<TType>
-        {
-            return (IRepository<TEntity, TType>)_repositories[typeof(TEntity)];
-        }
     }
 }

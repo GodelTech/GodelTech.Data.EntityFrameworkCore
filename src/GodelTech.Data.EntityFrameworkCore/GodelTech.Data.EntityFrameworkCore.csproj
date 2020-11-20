@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>GodelTech.Data.EntityFrameworkCore</PackageId>
-    <VersionPrefix>1.0.0-rc.2</VersionPrefix>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <Authors>v.rodchenko</Authors>
     <Company>Godel Technologies</Company>
     <Description>Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.</Description>
