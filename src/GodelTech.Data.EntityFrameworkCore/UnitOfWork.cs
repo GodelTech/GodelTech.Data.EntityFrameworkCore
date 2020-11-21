@@ -39,6 +39,30 @@ namespace GodelTech.Data.EntityFrameworkCore
         protected DbContext DbContext { get; }
 
         /// <summary>
+        /// Registers repository instance.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TType">The type of the T type.</typeparam>
+        /// <param name="repository">The repository.</param>
+        protected void RegisterRepository<TEntity, TType>(IRepository<TEntity, TType> repository)
+            where TEntity : class, IEntity<TType>
+        {
+            _repositories[typeof(TEntity)] = repository;
+        }
+
+        /// <summary>
+        /// Gets the repository for specified entity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TType">The type of the T type.</typeparam>
+        /// <returns>IRepository{TEntity, TType}.</returns>
+        public virtual IRepository<TEntity, TType> GetRepository<TEntity, TType>()
+            where TEntity : class, IEntity<TType>
+        {
+            return (IRepository<TEntity, TType>)_repositories[typeof(TEntity)];
+        }
+
+        /// <summary>
         /// Commits all changes on the DB.
         /// </summary>
         /// <returns>Number of rows affected.</returns>
@@ -78,30 +102,6 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
 
             return cnt;
-        }
-
-        /// <summary>
-        /// Registers repository instance.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-        /// <typeparam name="TType">The type of the T type.</typeparam>
-        /// <param name="repository">The repository.</param>
-        protected void RegisterRepository<TEntity, TType>(IRepository<TEntity, TType> repository)
-            where TEntity : class, IEntity<TType>
-        {
-            _repositories[typeof(TEntity)] = repository;
-        }
-
-        /// <summary>
-        /// Gets the repository for specified entity type.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-        /// <typeparam name="TType">The type of the T type.</typeparam>
-        /// <returns>IRepository{TEntity, TType}.</returns>
-        public virtual IRepository<TEntity, TType> GetRepository<TEntity, TType>()
-            where TEntity : class, IEntity<TType>
-        {
-            return (IRepository<TEntity, TType>)_repositories[typeof(TEntity)];
         }
 
         /// <summary>
