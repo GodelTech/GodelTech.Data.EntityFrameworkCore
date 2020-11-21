@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>GodelTech.Data.EntityFrameworkCore</PackageId>
-    <VersionPrefix>3.0.0</VersionPrefix>
+    <VersionPrefix>3.0.1</VersionPrefix>
     <Authors>v.rodchenko</Authors>
     <Company>Godel Technologies</Company>
     <Description>Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.</Description>
@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GodelTech.Data" Version="3.0.0" />
+    <PackageReference Include="GodelTech.Data" Version="3.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
 
     <!-- Source Link needs this -->
