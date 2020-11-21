@@ -5,8 +5,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
 {
     public class FakeRepository : Repository<FakeEntity, int>
     {
-        public FakeRepository(DbContext dbContext)
-            : base(dbContext)
+        public FakeRepository(DbContext dbContext, IDataMapper dataMapper)
+            : base(dbContext, dataMapper)
         {
 
         }
@@ -16,9 +16,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
             return Query(queryParameters);
         }
 
-        public IQueryable<TModel> ProtectedQuery<TModel>(IDataMapper dataMapper, QueryParameters<FakeEntity, int> queryParameters = null)
+        public IQueryable<TModel> ProtectedQuery<TModel>(QueryParameters<FakeEntity, int> queryParameters = null)
         {
-            return Query<TModel>(dataMapper, queryParameters);
+            return Query<TModel>(queryParameters);
         }
 
         public IQueryable<FakeEntity> ProtectedPagedResultQuery(QueryParameters<FakeEntity, int> queryParameters)
@@ -26,9 +26,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
             return PagedResultQuery(queryParameters);
         }
 
-        public IQueryable<TModel> ProtectedPagedResultQuery<TModel>(IDataMapper dataMapper, QueryParameters<FakeEntity, int> queryParameters)
+        public IQueryable<TModel> ProtectedPagedResultQuery<TModel>(QueryParameters<FakeEntity, int> queryParameters)
         {
-            return PagedResultQuery<TModel>(dataMapper, queryParameters);
+            return PagedResultQuery<TModel>(queryParameters);
         }
 
         public IQueryable<FakeEntity> ProtectedCountQuery(QueryParameters<FakeEntity, int> queryParameters = null)

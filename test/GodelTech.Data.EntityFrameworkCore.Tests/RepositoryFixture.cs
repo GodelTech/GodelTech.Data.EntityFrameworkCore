@@ -20,7 +20,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<FakeDbContext>().UseInMemoryDatabase($"{nameof(RepositoryFixture)}{Guid.NewGuid():N}");
 
             UnitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext),
+                dbContext => new FakeRepository(dbContext, DataMapper),
                 dbContextOptionsBuilder.Options,
                 "dbo"
             );

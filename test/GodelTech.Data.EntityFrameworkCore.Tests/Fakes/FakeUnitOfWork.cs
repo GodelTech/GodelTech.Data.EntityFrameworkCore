@@ -17,7 +17,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
         public FakeUnitOfWork()
             : base(null)
         {
-            RegisterRepository(new FakeRepository(DbContext));
+            RegisterRepository(new FakeRepository(DbContext, new FakeDataMapper()));
         }
 
         public FakeRepository FakeEntityRepository => (FakeRepository)GetRepository<FakeEntity, int>();

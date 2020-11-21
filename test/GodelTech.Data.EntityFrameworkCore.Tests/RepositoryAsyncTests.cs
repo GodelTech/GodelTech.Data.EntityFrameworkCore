@@ -29,7 +29,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             ValidateQueryParametersMemberData(queryable, countQueryable);
 
             // Arrange & Act & Assert
-            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), await _fixture.UnitOfWork.FakeEntityRepository.GetAsync<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), await _fixture.UnitOfWork.FakeEntityRepository.GetAsync<FakeModel>(queryParameters));
         }
 
         #endregion
@@ -53,7 +53,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             ValidateQueryParametersMemberData(queryable, countQueryable);
 
             // Arrange & Act & Assert
-            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), await _fixture.UnitOfWork.FakeEntityRepository.GetListAsync<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), await _fixture.UnitOfWork.FakeEntityRepository.GetListAsync<FakeModel>(queryParameters));
         }
 
         #endregion
@@ -92,7 +92,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             if (queryParameters?.Page == null || queryParameters.Page.IsValid == false) return;
 
             // Arrange
-            var pagedResultQuery = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(_fixture.DataMapper, queryParameters);
+            var pagedResultQuery = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(queryParameters);
 
             var expectedPagedResult = new PagedResult<FakeModel>
             {
@@ -103,7 +103,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             };
 
             // Act & Assert
-            ObjectAssert.DeepEquals(expectedPagedResult, await _fixture.UnitOfWork.FakeEntityRepository.GetPagedListAsync<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(expectedPagedResult, await _fixture.UnitOfWork.FakeEntityRepository.GetPagedListAsync<FakeModel>(queryParameters));
         }
 
         #endregion
@@ -144,7 +144,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(InsertAsync_NewEntity_Inserted));
             var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             var entity = new FakeEntity();
 
@@ -162,7 +162,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(InsertAsync_NewEntitiesList_Inserted));
             var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             var entities = new List<FakeEntity>
             {

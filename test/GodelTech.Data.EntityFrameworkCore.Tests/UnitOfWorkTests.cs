@@ -26,8 +26,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_InsertNewEntity_AffectedOneRow));
+            var dataMapper = new FakeDataMapper();
             var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext),
+                dbContext => new FakeRepository(dbContext, dataMapper),
                 dbContextOptionsBuilder.Options,
                 "dbo"
             );
@@ -45,8 +46,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_UpdateNonexistentEntity_DataStorageException));
+            var dataMapper = new FakeDataMapper();
             var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext),
+                dbContext => new FakeRepository(dbContext, dataMapper),
                 dbContextOptionsBuilder.Options,
                 "dbo"
             );
@@ -105,8 +107,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Dispose_FalseDispose_Success));
+            var dataMapper = new FakeDataMapper();
             var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext),
+                dbContext => new FakeRepository(dbContext, dataMapper),
                 dbContextOptionsBuilder.Options,
                 "dbo"
             );
