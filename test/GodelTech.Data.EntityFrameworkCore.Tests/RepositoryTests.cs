@@ -25,7 +25,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
 
             // Act
-            var repository = new Repository<Entity<int>, int>(mockDbContext.Object);
+            var repository = new Repository<Entity<int>, int>(mockDbContext.Object, _fixture.DataMapper);
 
             // Assert
             Assert.IsAssignableFrom<IRepository<Entity<int>, int>>(repository);
@@ -206,7 +206,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             // Arrange & Act
             var expected = _fixture.DataMapper.Map<FakeModel>(queryable).Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery<FakeModel>(_fixture.DataMapper, queryParameters).Expression.ToString();
+            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery<FakeModel>(queryParameters).Expression.ToString();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -233,7 +233,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             ValidateQueryParametersMemberData(queryable, countQueryable);
 
             // Arrange & Act & Assert
-            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), _fixture.UnitOfWork.FakeEntityRepository.Get<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), _fixture.UnitOfWork.FakeEntityRepository.Get<FakeModel>(queryParameters));
         }
 
         #endregion
@@ -257,7 +257,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             ValidateQueryParametersMemberData(queryable, countQueryable);
 
             // Arrange & Act & Assert
-            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), _fixture.UnitOfWork.FakeEntityRepository.GetList<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), _fixture.UnitOfWork.FakeEntityRepository.GetList<FakeModel>(queryParameters));
         }
 
         #endregion
@@ -315,7 +315,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             // Arrange & Act
             var expected = _fixture.DataMapper.Map<FakeModel>(queryable).Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(_fixture.DataMapper, queryParameters).Expression.ToString();
+            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(queryParameters).Expression.ToString();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -357,7 +357,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             if (queryParameters?.Page == null || queryParameters.Page.IsValid == false) return;
 
             // Arrange
-            var pagedResultQuery = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(_fixture.DataMapper, queryParameters);
+            var pagedResultQuery = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(queryParameters);
 
             var expectedPagedResult = new PagedResult<FakeModel>
             {
@@ -368,7 +368,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             };
 
             // Act & Assert
-            ObjectAssert.DeepEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList<FakeModel>(_fixture.DataMapper, queryParameters));
+            ObjectAssert.DeepEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList<FakeModel>(queryParameters));
         }
 
         #endregion
@@ -427,7 +427,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Insert_NewEntity_Inserted));
             var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             var entity = new FakeEntity();
 
@@ -445,7 +445,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Insert_NewEntity_Inserted));
             var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             var entities = new List<FakeEntity>
             {
@@ -476,7 +476,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var entity = fakeDbContext.Add(new FakeEntity { Id = id }).Entity;
             fakeDbContext.SaveChanges();
 
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             // Act
             entity = repository.Update(entity);
@@ -501,7 +501,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var entity = fakeDbContext.Add(new FakeEntity { Id = id }).Entity;
             fakeDbContext.SaveChanges();
 
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             // Act
             repository.Delete(entity);
@@ -524,7 +524,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             fakeDbContext.Entry(entity).State = EntityState.Detached;
 
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             // Act
             repository.Delete(entity);
@@ -548,7 +548,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             });
             fakeDbContext.SaveChanges();
 
-            var repository = new Repository<FakeEntity, int>(fakeDbContext);
+            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
 
             // Act
             repository.Delete(new List<int> {2, 3});
