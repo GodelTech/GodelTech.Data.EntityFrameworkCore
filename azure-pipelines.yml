@@ -15,7 +15,7 @@ resources:
       type: github
       endpoint: 'godeltech'
       name: 'GodelTech/AzureDevOps.Pipeline.Templates'
-      ref: 'refs/heads/master'
+      ref: 'refs/tags/v1.8'
 
 extends:
   template: '.NET Core/NuGet.yml@GodelTech'
