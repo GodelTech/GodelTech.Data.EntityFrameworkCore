@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GodelTech.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore
