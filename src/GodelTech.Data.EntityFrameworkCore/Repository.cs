@@ -217,13 +217,12 @@ namespace GodelTech.Data.EntityFrameworkCore
 
             var totalCount = Count(queryParameters);
 
-            return new PagedResult<TEntity>
-            {
-                PageIndex = queryParameters.Page.Index,
-                PageSize = queryParameters.Page.Size,
-                Items = items,
-                TotalCount = totalCount
-            };
+            return new PagedResult<TEntity>(
+                queryParameters.Page.Index,
+                queryParameters.Page.Size,
+                items,
+                totalCount
+            );
         }
 
         /// <summary>
@@ -238,13 +237,12 @@ namespace GodelTech.Data.EntityFrameworkCore
 
             var totalCount = Count(queryParameters);
 
-            return new PagedResult<TModel>
-            {
-                PageIndex = queryParameters.Page.Index,
-                PageSize = queryParameters.Page.Size,
-                Items = items,
-                TotalCount = totalCount
-            };
+            return new PagedResult<TModel>(
+                queryParameters.Page.Index,
+                queryParameters.Page.Size,
+                items,
+                totalCount
+            );
         }
 
         /// <summary>
@@ -258,13 +256,12 @@ namespace GodelTech.Data.EntityFrameworkCore
 
             var totalCount = await CountAsync(queryParameters);
 
-            return new PagedResult<TEntity>
-            {
-                PageIndex = queryParameters.Page.Index,
-                PageSize = queryParameters.Page.Size,
-                Items = items,
-                TotalCount = totalCount
-            };
+            return new PagedResult<TEntity>(
+                queryParameters.Page.Index,
+                queryParameters.Page.Size,
+                items,
+                totalCount
+            );
         }
 
         /// <summary>
@@ -279,13 +276,12 @@ namespace GodelTech.Data.EntityFrameworkCore
 
             var totalCount = await CountAsync(queryParameters);
 
-            return new PagedResult<TModel>
-            {
-                PageIndex = queryParameters.Page.Index,
-                PageSize = queryParameters.Page.Size,
-                Items = items,
-                TotalCount = totalCount
-            };
+            return new PagedResult<TModel>(
+                queryParameters.Page.Index,
+                queryParameters.Page.Size,
+                items,
+                totalCount
+            );
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
+[assembly: CLSCompliant(true)]
 namespace GodelTech.Data.EntityFrameworkCore
 {
     /// <summary>
@@ -53,7 +54,7 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
             catch (DbUpdateException exception)
             {
-                throw new DataStorageException(exception);
+                throw new DataStorageException(exception.Message, exception);
             }
 
             return cnt;
@@ -74,7 +75,7 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
             catch (DbUpdateException exception)
             {
-                throw new DataStorageException(exception);
+                throw new DataStorageException(exception.Message, exception);
             }
 
             return cnt;
