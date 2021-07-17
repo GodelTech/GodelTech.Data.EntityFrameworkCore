@@ -10,7 +10,7 @@ namespace GodelTech.Data.EntityFrameworkCore
     /// <seealso>
     ///     <cref>GodelTech.Data.IEntity{TType}</cref>
     /// </seealso>
-    public class EntityNoneDatabaseGeneratedIdentifier<TType> : Entity<TType>
+    public abstract class EntityNoneDatabaseGeneratedIdentifier<TType> : Entity<TType>
     {
         /// <summary>
         /// Gets or sets the identifier.

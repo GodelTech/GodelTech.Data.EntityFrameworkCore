@@ -6,15 +6,15 @@ namespace GodelTech.Data.EntityFrameworkCore
     /// Class DbContextBase.
     /// </summary>
     /// <seealso cref="DbContext" />
-    public class DbContextBase : DbContext
+    public abstract class DbContextBase : DbContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DbContextBase"/> class.
         /// </summary>
-        /// <param name="dbContextOptions">The database context options.</param>
+        /// <param name="options">The database context options.</param>
         /// <param name="schemaName">Name of the schema.</param>
-        public DbContextBase(DbContextOptions dbContextOptions, string schemaName)
-            : base(dbContextOptions)
+        protected DbContextBase(DbContextOptions options, string schemaName)
+            : base(options)
         {
             SchemaName = schemaName;
         }

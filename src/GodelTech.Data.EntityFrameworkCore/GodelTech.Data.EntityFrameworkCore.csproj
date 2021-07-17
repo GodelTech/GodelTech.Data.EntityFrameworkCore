@@ -1,38 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <PackageId>GodelTech.Data.EntityFrameworkCore</PackageId>
-    <VersionPrefix>3.0.1</VersionPrefix>
-    <Authors>v.rodchenko</Authors>
-    <Company>Godel Technologies</Company>
-    <Description>Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.</Description>
-    <Copyright>Godel Technologies 2020</Copyright>
-    <PackageLicenseUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/wiki</PackageProjectUrl>
-    <PackageIconUrl>https://www.gravatar.com/avatar/839234621070de51e7b9cabd5ceee8fe?s=64</PackageIconUrl>
-    <RepositoryUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore</RepositoryUrl>
-    <PackageTags>Entity Framework Core Data UnitOfWork Repository Entity</PackageTags>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<PackageId>GodelTech.Data.EntityFrameworkCore</PackageId>
+		<VersionPrefix>3.0.1</VersionPrefix>
+		<Authors>v.rodchenko</Authors>
+		<Company>Godel Technologies</Company>
+		<Description>Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.</Description>
+		<Copyright>Godel Technologies 2020</Copyright>
+		<PackageLicenseUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/wiki</PackageProjectUrl>
+		<PackageIconUrl>https://www.gravatar.com/avatar/839234621070de51e7b9cabd5ceee8fe?s=64</PackageIconUrl>
+		<RepositoryUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore</RepositoryUrl>
+		<PackageTags>Entity Framework Core Data UnitOfWork Repository Entity</PackageTags>
 
-    <!-- XML documentation -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
-    <!-- Source Link needs this -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<!-- XML documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-    <!-- SonarQube needs this -->
-    <ProjectGuid>{00000000-0000-0000-0000-000000000001}</ProjectGuid>
-  </PropertyGroup>
+		<!-- Source Link needs this -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-  <ItemGroup>
-    <PackageReference Include="GodelTech.Data" Version="3.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
+		<!-- SonarQube needs this -->
+		<ProjectGuid>{00000000-0000-0000-0000-000000000001}</ProjectGuid>
+	</PropertyGroup>
 
-    <!-- Source Link needs this -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="GodelTech.Data" Version="3.1.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+
+		<!-- Source Link needs this -->
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+	</ItemGroup>
 
 </Project>
