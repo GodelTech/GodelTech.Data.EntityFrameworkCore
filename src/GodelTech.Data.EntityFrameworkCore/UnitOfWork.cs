@@ -19,6 +19,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
         /// </summary>
         /// <param name="dbContext">The database context.</param>
+        [CLSCompliant(false)]
         protected UnitOfWork(DbContext dbContext)
         {
             _repositories = new Dictionary<Type, object>();
@@ -37,6 +38,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Gets the database context.
         /// </summary>
         /// <value>The database context.</value>
+        [CLSCompliant(false)]
         protected DbContext DbContext { get; }
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         protected virtual IRepository<TEntity, TType> GetRepository<TEntity, TType>()
             where TEntity : class, IEntity<TType>
         {
-            return (IRepository<TEntity, TType>)_repositories[typeof(TEntity)];
+            return (IRepository<TEntity, TType>) _repositories[typeof(TEntity)];
         }
 
         #region Dispose

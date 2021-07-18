@@ -28,7 +28,14 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns>true if x object is equal to the y object; otherwise, false.</returns>
         public virtual bool Equals(IEntity<TType> x, IEntity<TType> y)
         {
-            return x != null && y != null && x.Id.Equals(y.Id);
+            // Check whether the compared objects reference the same data
+            if (ReferenceEquals(x, y)) return true;
+
+            // Check whether any of the compared objects is null
+            if (ReferenceEquals(x, null) || ReferenceEquals(y, null)) return false;
+
+            // Check whether the objects' properties are equal.
+            return x.Id.Equals(y.Id);
         }
 
         /// <summary>
@@ -37,6 +44,10 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public virtual int GetHashCode(IEntity<TType> obj)
         {
+            // Check whether the object is null
+            if (ReferenceEquals(obj, null)) return 0;
+
+            // Calculate the hash code for the object.
             return obj.Id.GetHashCode();
         }
     }

@@ -1,10 +1,10 @@
 ﻿//using System;
-//using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
+//using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
 //using Microsoft.EntityFrameworkCore;
 //using Moq;
 //using Xunit;
 
-//namespace GodelTech.Data.EntityFrameworkCore.Tests
+//namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
 //{
 //    public class UnitOfWorkTests
 //    {
