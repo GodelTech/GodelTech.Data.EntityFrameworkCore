@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-[assembly: CLSCompliant(true)]
+[assembly: CLSCompliant(false)]
 namespace GodelTech.Data.EntityFrameworkCore
 {
     /// <summary>
@@ -19,7 +19,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
         /// </summary>
         /// <param name="dbContext">The database context.</param>
-        [CLSCompliant(false)]
         protected UnitOfWork(DbContext dbContext)
         {
             _repositories = new Dictionary<Type, object>();
@@ -38,7 +37,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Gets the database context.
         /// </summary>
         /// <value>The database context.</value>
-        [CLSCompliant(false)]
         protected DbContext DbContext { get; }
 
         /// <summary>
