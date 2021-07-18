@@ -8,12 +8,12 @@ namespace GodelTech.Data.EntityFrameworkCore
     /// Repository for data layer
     /// </summary>
     /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-    /// <typeparam name="TType">The type of the T type.</typeparam>
-    public partial class Repository<TEntity, TType> : IRepository<TEntity, TType>
-        where TEntity : class, IEntity<TType>
+    /// <typeparam name="TKey">The type of the T key.</typeparam>
+    public partial class Repository<TEntity, TKey> : IRepository<TEntity, TKey>
+        where TEntity : class, IEntity<TKey>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Repository{TEntity, TType}"/> class.
+        /// Initializes a new instance of the <see cref="Repository{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="dbContext">The database context.</param>
         /// <param name="dataMapper">The data mapper.</param>
@@ -46,7 +46,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IQueryable{TEntity}</cref>.</returns>
-        protected virtual IQueryable<TEntity> Query(QueryParameters<TEntity, TType> queryParameters = null)
+        protected virtual IQueryable<TEntity> Query(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             IQueryable<TEntity> query = DbSet;
 
@@ -80,7 +80,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IQueryable{TEntity}</cref>.</returns>
-        protected virtual IQueryable<TModel> Query<TModel>(QueryParameters<TEntity, TType> queryParameters = null)
+        protected virtual IQueryable<TModel> Query<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return DataMapper.Map<TModel>(
                 Query(queryParameters)
@@ -92,7 +92,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IQueryable{TEntity}</cref>.</returns>
-        protected virtual IQueryable<TEntity> PagedResultQuery(QueryParameters<TEntity, TType> queryParameters)
+        protected virtual IQueryable<TEntity> PagedResultQuery(QueryParameters<TEntity, TKey> queryParameters)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
@@ -109,7 +109,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IQueryable{TEntity}</cref>.</returns>
-        protected IQueryable<TModel> PagedResultQuery<TModel>(QueryParameters<TEntity, TType> queryParameters)
+        protected IQueryable<TModel> PagedResultQuery<TModel>(QueryParameters<TEntity, TKey> queryParameters)
         {
             return DataMapper.Map<TModel>(
                 PagedResultQuery(queryParameters)
@@ -121,7 +121,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IQueryable{TEntity}</cref>.</returns>
-        protected virtual IQueryable<TEntity> CountQuery(QueryParameters<TEntity, TType> queryParameters = null)
+        protected virtual IQueryable<TEntity> CountQuery(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             IQueryable<TEntity> query = DbSet;
 

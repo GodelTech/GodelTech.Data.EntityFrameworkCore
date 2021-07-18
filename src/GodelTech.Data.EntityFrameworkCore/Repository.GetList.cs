@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
-    public partial class Repository<TEntity, TType>
+    public partial class Repository<TEntity, TKey>
     {
         /// <summary>
         /// Gets entities of type T from repository that satisfies a query parameters.
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IList{TEntity}</cref>.</returns>
-        public virtual IList<TEntity> GetList(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual IList<TEntity> GetList(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return Query(queryParameters).ToList();
         }
@@ -23,7 +23,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>IList{TModel}</cref>.</returns>
-        public virtual IList<TModel> GetList<TModel>(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual IList<TModel> GetList<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return Query<TModel>(queryParameters).ToList();
         }
@@ -33,7 +33,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>Task{IList{TModel}}</cref>.</returns>
-        public virtual async Task<IList<TEntity>> GetListAsync(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual async Task<IList<TEntity>> GetListAsync(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return await Query(queryParameters).ToListAsync();
         }
@@ -44,7 +44,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>Task{IList{TModel}}</cref>.</returns>
-        public virtual async Task<IList<TModel>> GetListAsync<TModel>(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual async Task<IList<TModel>> GetListAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return await Query<TModel>(queryParameters).ToListAsync();
         }

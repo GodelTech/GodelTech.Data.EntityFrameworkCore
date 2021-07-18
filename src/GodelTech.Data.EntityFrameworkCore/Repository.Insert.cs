@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
-    public partial class Repository<TEntity, TType>
+    public partial class Repository<TEntity, TKey>
     {
         /// <summary>
         /// Inserts entity in the repository.

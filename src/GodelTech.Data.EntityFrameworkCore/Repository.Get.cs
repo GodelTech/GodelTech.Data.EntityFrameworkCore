@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
-    public partial class Repository<TEntity, TType>
+    public partial class Repository<TEntity, TKey>
     {
         /// <summary>
         /// Gets entity of type T from repository that satisfies a query parameters.
@@ -13,7 +13,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>TEntity</cref>.</returns>
 #pragma warning disable CA1716 // Identifiers should not match keywords
-        public virtual TEntity Get(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual TEntity Get(QueryParameters<TEntity, TKey> queryParameters = null)
 #pragma warning restore CA1716 // Identifiers should not match keywords
         {
             return Query(queryParameters).FirstOrDefault();
@@ -27,7 +27,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>TModel</cref></returns>
 #pragma warning disable CA1716 // Identifiers should not match keywords
-        public virtual TModel Get<TModel>(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual TModel Get<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
 #pragma warning restore CA1716 // Identifiers should not match keywords
         {
             return Query<TModel>(queryParameters).FirstOrDefault();
@@ -39,7 +39,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>Task{TEntity}</cref>.</returns>
-        public virtual async Task<TEntity> GetAsync(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual async Task<TEntity> GetAsync(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return await Query(queryParameters).FirstOrDefaultAsync();
         }
@@ -51,7 +51,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>Task{TModel}</cref>.</returns>
-        public virtual async Task<TModel> GetAsync<TModel>(QueryParameters<TEntity, TType> queryParameters = null)
+        public virtual async Task<TModel> GetAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
         {
             return await Query<TModel>(queryParameters).FirstOrDefaultAsync();
         }

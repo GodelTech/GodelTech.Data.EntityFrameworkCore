@@ -1,6 +1,6 @@
 ﻿namespace GodelTech.Data.EntityFrameworkCore
 {
-    public partial class Repository<TEntity, TType>
+    public partial class Repository<TEntity, TKey>
     {
         /// <summary>
         /// Updates entity in the repository.

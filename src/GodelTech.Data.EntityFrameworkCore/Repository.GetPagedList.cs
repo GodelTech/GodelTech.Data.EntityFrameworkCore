@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
-    public partial class Repository<TEntity, TType>
+    public partial class Repository<TEntity, TKey>
     {
         /// <summary>
         /// Gets paged list of entities of type T from repository that satisfies a query parameters.
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>PagedResult{TEntity}</cref>.</returns>
-        public virtual PagedResult<TEntity> GetPagedList(QueryParameters<TEntity, TType> queryParameters)
+        public virtual PagedResult<TEntity> GetPagedList(QueryParameters<TEntity, TKey> queryParameters)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
@@ -33,7 +33,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>PagedResult{TModel}</cref>.</returns>
-        public virtual PagedResult<TModel> GetPagedList<TModel>(QueryParameters<TEntity, TType> queryParameters)
+        public virtual PagedResult<TModel> GetPagedList<TModel>(QueryParameters<TEntity, TKey> queryParameters)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
@@ -53,7 +53,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>Task{PagedResult{TEntity}}</cref>.</returns>
-        public virtual Task<PagedResult<TEntity>> GetPagedListAsync(QueryParameters<TEntity, TType> queryParameters)
+        public virtual Task<PagedResult<TEntity>> GetPagedListAsync(QueryParameters<TEntity, TKey> queryParameters)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
@@ -66,14 +66,14 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>Task{PagedResult{TModel}}</cref>.</returns>
-        public virtual Task<PagedResult<TModel>> GetPagedListAsync<TModel>(QueryParameters<TEntity, TType> queryParameters)
+        public virtual Task<PagedResult<TModel>> GetPagedListAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
             return GetPagedListInternalAsync<TModel>(queryParameters);
         }
 
-        private async Task<PagedResult<TEntity>> GetPagedListInternalAsync(QueryParameters<TEntity, TType> queryParameters)
+        private async Task<PagedResult<TEntity>> GetPagedListInternalAsync(QueryParameters<TEntity, TKey> queryParameters)
         {
             var items = await PagedResultQuery(queryParameters).ToListAsync();
 
@@ -86,7 +86,7 @@ namespace GodelTech.Data.EntityFrameworkCore
             );
         }
 
-        private async Task<PagedResult<TModel>> GetPagedListInternalAsync<TModel>(QueryParameters<TEntity, TType> queryParameters)
+        private async Task<PagedResult<TModel>> GetPagedListInternalAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters)
         {
             var items = await PagedResultQuery<TModel>(queryParameters).ToListAsync();
 
