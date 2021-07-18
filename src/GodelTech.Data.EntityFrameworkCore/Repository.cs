@@ -94,7 +94,9 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>TEntity</cref>.</returns>
+#pragma warning disable CA1716 // Identifiers should not match keywords
         public virtual TEntity Get(QueryParameters<TEntity, TType> queryParameters = null)
+#pragma warning restore CA1716 // Identifiers should not match keywords
         {
             return Query(queryParameters).FirstOrDefault();
         }
@@ -106,7 +108,9 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
         /// <returns><cref>TModel</cref></returns>
+#pragma warning disable CA1716 // Identifiers should not match keywords
         public virtual TModel Get<TModel>(QueryParameters<TEntity, TType> queryParameters = null)
+#pragma warning restore CA1716 // Identifiers should not match keywords
         {
             return Query<TModel>(queryParameters).FirstOrDefault();
         }
@@ -213,6 +217,8 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns><cref>PagedResult{TEntity}</cref>.</returns>
         public virtual PagedResult<TEntity> GetPagedList(QueryParameters<TEntity, TType> queryParameters)
         {
+            if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
+
             var items = PagedResultQuery(queryParameters).ToList();
 
             var totalCount = Count(queryParameters);
@@ -233,6 +239,8 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns><cref>PagedResult{TModel}</cref>.</returns>
         public virtual PagedResult<TModel> GetPagedList<TModel>(QueryParameters<TEntity, TType> queryParameters)
         {
+            if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
+
             var items = PagedResultQuery<TModel>(queryParameters).ToList();
 
             var totalCount = Count(queryParameters);
@@ -252,6 +260,8 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns><cref>Task{PagedResult{TEntity}}</cref>.</returns>
         public virtual async Task<PagedResult<TEntity>> GetPagedListAsync(QueryParameters<TEntity, TType> queryParameters)
         {
+            if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
+
             var items = await PagedResultQuery(queryParameters).ToListAsync();
 
             var totalCount = await CountAsync(queryParameters);
@@ -272,6 +282,8 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns><cref>Task{PagedResult{TModel}}</cref>.</returns>
         public virtual async Task<PagedResult<TModel>> GetPagedListAsync<TModel>(QueryParameters<TEntity, TType> queryParameters)
         {
+            if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
+
             var items = await PagedResultQuery<TModel>(queryParameters).ToListAsync();
 
             var totalCount = await CountAsync(queryParameters);
