@@ -1,0 +1,84 @@
+﻿using System;
+using System.Threading.Tasks;
+using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using Xunit;
+
+namespace GodelTech.Data.EntityFrameworkCore.Tests
+{
+    public sealed class UnitOfWorkAsyncTests : IDisposable
+    {
+        private readonly Mock<DbContext> _mockDbContext;
+
+        private readonly UnitOfWork _unitOfWork;
+
+        public UnitOfWorkAsyncTests()
+        {
+            _mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
+
+            _mockDbContext
+                .Setup(x => x.Dispose());
+
+            _unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+        }
+        
+        public void Dispose()
+        {
+            _unitOfWork.Dispose();
+        }
+
+        [Fact]
+        public async Task CommitAsync()
+        {
+            // Arrange
+            const int expectedResult = 1;
+
+            _mockDbContext
+                .Setup(
+                    x => x.SaveChangesAsync(default)
+                )
+                .ReturnsAsync(expectedResult);
+
+            // Act
+            var result = await _unitOfWork.CommitAsync();
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.SaveChangesAsync(default),
+                    Times.Once
+                );
+
+            Assert.Equal(expectedResult, result);
+        }
+
+        [Fact]
+        public async Task Commit_WhenDbUpdateException_ThrowsDataStorageException()
+        {
+            // Arrange
+            var expectedInnerException = new DbUpdateException("Test Message");
+
+            _mockDbContext
+                .Setup(
+                    x => x.SaveChangesAsync(default)
+                )
+                .Throws(expectedInnerException);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<DataStorageException>(
+                () => _unitOfWork.CommitAsync()
+            );
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.SaveChangesAsync(default),
+                    Times.Once
+                );
+
+            Assert.Equal(expectedInnerException.Message, exception.Message);
+            Assert.Equal(expectedInnerException, exception.InnerException);
+        }
+    }
+}
