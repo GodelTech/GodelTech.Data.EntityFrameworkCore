@@ -54,7 +54,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         }
 
         [Fact]
-        public async Task Commit_WhenDbUpdateException_ThrowsDataStorageException()
+        public async Task CommitAsync_WhenDbUpdateException_ThrowsDataStorageException()
         {
             // Arrange
             var expectedInnerException = new DbUpdateException("Test Message");
