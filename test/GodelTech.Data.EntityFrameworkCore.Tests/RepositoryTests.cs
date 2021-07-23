@@ -33,7 +33,20 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             _mockDataMapper = new Mock<IDataMapper>(MockBehavior.Strict);
         }
 
-        public static IEnumerable<object[]> QueryMemberData =>
+        public static IEnumerable<object[]> QueryMemberData
+        {
+            get
+            {
+                var list = new List<object[]>();
+
+                list.AddRange(NonPagedResultQueryMemberData);
+                list.AddRange(PagedResultQueryMemberData);
+
+                return list;
+            }
+        }
+
+        public static IEnumerable<object[]> NonPagedResultQueryMemberData =>
             new Collection<object[]>
             {
                 // Guid
@@ -128,24 +141,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                     default(Guid),
                     new QueryParameters<FakeEntity<Guid>, Guid>
                     {
-                        Page = new PageRule
-                        {
-                            Index = 2,
-                            Size = 4
-                        }
-                    },
-                    GuidEntities,
-                    GuidEntities
-                        .Skip(4 * 2)
-                        .Take(4)
-                        .AsQueryable(),
-                    2
-                },
-                new object[]
-                {
-                    default(Guid),
-                    new QueryParameters<FakeEntity<Guid>, Guid>
-                    {
                         Filter = new FilterRule<FakeEntity<Guid>, Guid>
                         {
                             Expression = x => x.Name == "Test Name"
@@ -184,6 +179,50 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                         .OrderByDescending(x => x.Name)
                         .AsQueryable(),
                     3
+                },
+                // int
+                new object[]
+                {
+                    default(int),
+                    null,
+                    new Collection<FakeEntity<int>>(),
+                    new Collection<FakeEntity<int>>()
+                        .AsQueryable(),
+                    0
+                },
+                // string
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    new Collection<FakeEntity<string>>(),
+                    new Collection<FakeEntity<string>>()
+                        .AsQueryable(),
+                    0
+                }
+            };
+
+        public static IEnumerable<object[]> PagedResultQueryMemberData =>
+            new Collection<object[]>
+            {
+                // Guid
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
                 },
                 new object[]
                 {
@@ -255,27 +294,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                         .Take(4)
                         .AsQueryable(),
                     2
-                },
-                // int
-                new object[]
-                {
-                    default(int),
-                    null,
-                    new Collection<FakeEntity<int>>(),
-                    new Collection<FakeEntity<int>>()
-                        .AsQueryable(),
-                    0
-                },
-                // string
-                new object[]
-                {
-                    string.Empty,
-                    null,
-                    new Collection<FakeEntity<string>>(),
-                    new Collection<FakeEntity<string>>()
-                        .AsQueryable(),
-                    0
                 }
+                // int
+                // string
             };
 
         private Repository<TEntity, TKey> GetRepository<TEntity, TKey>(ICollection<TEntity> entities)
