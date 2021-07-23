@@ -10,7 +10,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
     {
         [Theory]
         [MemberData(nameof(RepositoryTests.QueryMemberData), MemberType = typeof(RepositoryTests))]
-        public async Task CountAsync_Success<TKey>(
+        public async Task ExistsAsync_Success<TKey>(
             TKey defaultKey,
             QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
             Collection<FakeEntity<TKey>> entities,
@@ -18,19 +18,12 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
-            var query = entities.AsQueryable();
-
-            if (queryParameters?.Filter?.Expression != null)
-            {
-                query = query.Where(queryParameters.Filter.Expression);
-            }
-
-            var expectedResult = query.Count();
+            var expectedResult = queryableEntities.Any();
 
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.CountAsync(queryParameters);
+            var result = await repository.ExistsAsync(queryParameters);
 
             // Assert
             Assert.NotNull(defaultKey);

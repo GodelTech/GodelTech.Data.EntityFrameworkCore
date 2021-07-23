@@ -1,16 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
-    public partial class RepositoryAsyncTests
+    public partial class RepositoryTests
     {
         [Theory]
-        [MemberData(nameof(RepositoryTests.QueryMemberData), MemberType = typeof(RepositoryTests))]
-        public async Task CountAsync_Success<TKey>(
+        [MemberData(nameof(QueryMemberData))]
+        public void Exists_Success<TKey>(
             TKey defaultKey,
             QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
             Collection<FakeEntity<TKey>> entities,
@@ -18,19 +17,12 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
-            var query = entities.AsQueryable();
-
-            if (queryParameters?.Filter?.Expression != null)
-            {
-                query = query.Where(queryParameters.Filter.Expression);
-            }
-
-            var expectedResult = query.Count();
+            var expectedResult = queryableEntities.Any();
 
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.CountAsync(queryParameters);
+            var result = repository.Exists(queryParameters);
 
             // Assert
             Assert.NotNull(defaultKey);
