@@ -25,6 +25,34 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000010"), Name = "New Test Name" }
         };
 
+        private static readonly Collection<FakeEntity<int>> IntEntities = new Collection<FakeEntity<int>>
+        {
+            new FakeEntity<int> { Id = 1, Name = "Test Name One" },
+            new FakeEntity<int> { Id = 2, Name = "Test Name Two" },
+            new FakeEntity<int> { Id = 3, Name = "Test Name Three" },
+            new FakeEntity<int> { Id = 4, Name = "Z Name Four" },
+            new FakeEntity<int> { Id = 5, Name = "A Name Five" },
+            new FakeEntity<int> { Id = 6, Name = "Test Name" },
+            new FakeEntity<int> { Id = 7, Name = "Other Test Name" },
+            new FakeEntity<int> { Id = 8, Name = "Test Name" },
+            new FakeEntity<int> { Id = 9, Name = "Test Name" },
+            new FakeEntity<int> { Id = 10, Name = "New Test Name" }
+        };
+
+        private static readonly Collection<FakeEntity<string>> StringEntities = new Collection<FakeEntity<string>>
+        {
+            new FakeEntity<string> { Id = "Test One", Name = "Test Name One" },
+            new FakeEntity<string> { Id = "Test Two", Name = "Test Name Two" },
+            new FakeEntity<string> { Id = "Test Three", Name = "Test Name Three" },
+            new FakeEntity<string> { Id = "Test Four", Name = "Z Name Four" },
+            new FakeEntity<string> { Id = "Test Five", Name = "A Name Five" },
+            new FakeEntity<string> { Id = "Test Six", Name = "Test Name" },
+            new FakeEntity<string> { Id = "Test Seven", Name = "Other Test Name" },
+            new FakeEntity<string> { Id = "Test Eight", Name = "Test Name" },
+            new FakeEntity<string> { Id = "Test Nine", Name = "Test Name" },
+            new FakeEntity<string> { Id = "Test Ten", Name = "New Test Name" }
+        };
+
         private readonly Mock<DbContext> _mockDbContext;
         private readonly Mock<IDataMapper> _mockDataMapper;
 
@@ -191,6 +219,127 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                         .AsQueryable(),
                     0
                 },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>(),
+                    new Collection<FakeEntity<int>>(),
+                    new Collection<FakeEntity<int>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    default(int),
+                    null,
+                    IntEntities,
+                    IntEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>(),
+                    IntEntities,
+                    IntEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
                 // string
                 new object[]
                 {
@@ -200,6 +349,127 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                     new Collection<FakeEntity<string>>()
                         .AsQueryable(),
                     0
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>(),
+                    new Collection<FakeEntity<string>>(),
+                    new Collection<FakeEntity<string>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    StringEntities,
+                    StringEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>(),
+                    StringEntities,
+                    StringEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    3
                 }
             };
 
@@ -295,9 +565,187 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                         .Take(4)
                         .AsQueryable(),
                     2
-                }
+                },
                 // int
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 1,
+                            Size = 2
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .Skip(2 * 1)
+                        .Take(2)
+                        .AsQueryable(),
+                    1
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderBy(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderByDescending(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
                 // string
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 1,
+                            Size = 2
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .Skip(2 * 1)
+                        .Take(2)
+                        .AsQueryable(),
+                    1
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderBy(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderByDescending(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                }
             };
 
         [Theory]
