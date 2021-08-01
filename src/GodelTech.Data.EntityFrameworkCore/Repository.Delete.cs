@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GodelTech.Data.Extensions;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
@@ -21,12 +20,23 @@ namespace GodelTech.Data.EntityFrameworkCore
         }
 
         /// <summary>
-        /// Deletes list of entities by their ids.
+        /// Deletes list of entities.
         /// </summary>
-        /// <param name="ids">List of entities ids.</param>
-        public virtual void Delete(IEnumerable<TKey> ids)
+        /// <param name="entities">List of entities</param>
+        public virtual void Delete(IEnumerable<TEntity> entities)
         {
-            var entities = this.GetList(x => ids.Contains(x.Id));
+            Delete(entities.ToList());
+        }
+
+        private void Delete(IList<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                if (IsDetached(entity))
+                {
+                    DbSet.Attach(entity);
+                }
+            }
 
             DbSet.RemoveRange(entities);
         }
