@@ -12,6 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="10.1.1" />
 		<PackageReference Include="coverlet.collector" Version="3.0.3">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
@@ -32,6 +33,25 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\GodelTech.Data.EntityFrameworkCore\GodelTech.Data.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="RepositoryTests.*.cs">
+			<DependentUpon>RepositoryTests.cs</DependentUpon>
+		</Compile>
+
+		<Compile Update="RepositoryAsyncTests.*.cs">
+			<DependentUpon>RepositoryAsyncTests.cs</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="RepositoryTests - Copy.Insert.cs">
+	    <DependentUpon>RepositoryTests.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="RepositoryTests - Copy.Update.cs">
+	    <DependentUpon>RepositoryTests.cs</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 </Project>

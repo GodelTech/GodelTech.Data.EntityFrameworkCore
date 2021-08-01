@@ -1,18 +1,23 @@
-﻿//using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 
-//namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
-//{
-//    public class FakeDbContext : DbContextBase
-//    {
-//        public FakeDbContext(DbContextOptions options, string schemaName)
-//            : base(options, schemaName)
-//        {
+namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
+{
+    public class FakeDbContext : DbContextBase
+    {
+        public FakeDbContext(DbContextOptions options, string schemaName)
+            : base(options, schemaName)
+        {
 
-//        }
+        }
 
-//        protected override void OnModelCreating(ModelBuilder modelBuilder)
-//        {
-//            modelBuilder.Entity<FakeEntity>();
-//        }
-//    }
-//}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FakeEntity<Guid>>();
+
+            modelBuilder.Entity<FakeEntity<int>>();
+
+            modelBuilder.Entity<FakeEntity<string>>();
+        }
+    }
+}

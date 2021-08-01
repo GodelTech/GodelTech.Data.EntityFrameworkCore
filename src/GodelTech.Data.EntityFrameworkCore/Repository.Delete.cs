@@ -27,6 +27,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         public virtual void Delete(IEnumerable<TKey> ids)
         {
             var entities = this.GetList(x => ids.Contains(x.Id));
+
             DbSet.RemoveRange(entities);
         }
     }

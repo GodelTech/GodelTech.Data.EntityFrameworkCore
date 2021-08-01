@@ -34,4 +34,14 @@
 		<ProjectReference Include="..\..\src\GodelTech.Data.EntityFrameworkCore\GodelTech.Data.EntityFrameworkCore.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Compile Update="RepositoryTests.*.cs">
+			<DependentUpon>RepositoryTests.cs</DependentUpon>
+		</Compile>
+
+		<Compile Update="RepositoryAsyncTests.*.cs">
+			<DependentUpon>RepositoryAsyncTests.cs</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
 </Project>

@@ -1,36 +1,33 @@
-﻿//using System;
-//using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 
-//namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
-//{
-//    public class FakeUnitOfWork : UnitOfWork
-//    {
-//        public FakeUnitOfWork(DbContext dbContext)
-//            : base(dbContext)
-//        {
+namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
+{
+    public class FakeUnitOfWork : UnitOfWork
+    {
+        public FakeUnitOfWork(
+            Func<DbContext, Repository<FakeEntity<Guid>, Guid>> fakeGuidEntityRepository,
+            Func<DbContext, Repository<FakeEntity<int>, int>> fakeIntEntityRepository,
+            Func<DbContext, Repository<FakeEntity<string>, string>> fakeStringEntityRepository,
+            DbContextOptions dbContextOptions,
+            string schemaName)
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            : base(new FakeDbContext(dbContextOptions, schemaName))
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        {
+            RegisterRepository(fakeGuidEntityRepository(DbContext));
+            RegisterRepository(fakeIntEntityRepository(DbContext));
+            RegisterRepository(fakeStringEntityRepository(DbContext));
+        }
 
-//        }
+        public IRepository<FakeEntity<Guid>, Guid> FakeGuidEntityRepository => GetRepository<FakeEntity<Guid>, Guid>();
 
-//        //public FakeUnitOfWork(
-//        //    Func<DbContext, FakeRepository> fakeEntityRepository,
-//        //    DbContextOptions dbContextOptions,
-//        //    string schemaName)
-//        //    : base(new FakeDbContext(dbContextOptions, schemaName))
-//        //{
-//        //    RegisterRepository(fakeEntityRepository(DbContext));
-//        //}
+        public IRepository<FakeEntity<int>, int> FakeIntEntityRepository => GetRepository<FakeEntity<int>, int>();
 
-//        //public FakeUnitOfWork()
-//        //    : base(null)
-//        //{
-//        //    RegisterRepository(new FakeRepository(DbContext, new FakeDataMapper()));
-//        //}
+        public IRepository<FakeEntity<string>, string> FakeStringEntityRepository => GetRepository<FakeEntity<string>, string>();
 
-//        //public FakeRepository FakeEntityRepository => (FakeRepository) GetRepository<FakeEntity, int>();
+        public DbContext ExposedDbContext => DbContext;
 
-//        //public void DoNotDispose()
-//        //{
-//        //    Dispose(false);
-//        //}
-//    }
-//}
+        public IRepository<FakeEntity<TKey>, TKey> GetFakeTypeEntityRepository<TKey>() => GetRepository<FakeEntity<TKey>, TKey>();
+    }
+}
