@@ -15,6 +15,10 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
             : base(new FakeDbContext(dbContextOptions, schemaName))
 #pragma warning restore CA2000 // Dispose objects before losing scope
         {
+            if (fakeGuidEntityRepository == null) throw new ArgumentNullException(nameof(fakeGuidEntityRepository));
+            if (fakeIntEntityRepository == null) throw new ArgumentNullException(nameof(fakeIntEntityRepository));
+            if (fakeStringEntityRepository == null) throw new ArgumentNullException(nameof(fakeStringEntityRepository));
+
             RegisterRepository(fakeGuidEntityRepository(DbContext));
             RegisterRepository(fakeIntEntityRepository(DbContext));
             RegisterRepository(fakeStringEntityRepository(DbContext));

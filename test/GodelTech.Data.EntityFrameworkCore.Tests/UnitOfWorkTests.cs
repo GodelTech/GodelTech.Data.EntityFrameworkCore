@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Moq.Protected;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
@@ -167,8 +168,15 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Arrange
             using var fakeUnitOfWork = new FakeUnitOfWork(null);
 
-            // Act & Assert
+            // Act
             fakeUnitOfWork.ExposedDispose(true);
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.Dispose(),
+                    Times.Never
+                );
         }
     }
 }

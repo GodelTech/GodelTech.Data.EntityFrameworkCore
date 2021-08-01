@@ -13,6 +13,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<FakeEntity<Guid>>();
 
             modelBuilder.Entity<FakeEntity<int>>();
