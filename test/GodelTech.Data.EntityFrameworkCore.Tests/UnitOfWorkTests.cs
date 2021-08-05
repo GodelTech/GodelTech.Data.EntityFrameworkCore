@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Moq.Protected;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
@@ -28,6 +27,34 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public void Dispose()
         {
             _unitOfWork.Dispose();
+        }
+
+        // https://blog.ingeniumsoftware.dev/unit-testing-finalizers-in-csharp/
+        [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+        public void Finalizer_DisposeWithFalse()
+        {
+            // Arrange
+            WeakReference<FakeUnitOfWork> weak = null;
+            Action dispose = () =>
+            {
+                // This will go out of scope after dispose() is executed
+                var unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+
+                weak = new WeakReference<FakeUnitOfWork>(unitOfWork, true);
+            };
+
+            // Act
+            dispose();
+            GC.Collect(0, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.Dispose(),
+                    Times.Never
+                );
         }
 
         [Fact]
