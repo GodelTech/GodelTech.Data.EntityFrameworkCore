@@ -1,110 +1,413 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Aurochses.Xunit;
+using System.Reflection;
+using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
     public class EntityTests
     {
-        private readonly Entity<int> _entity;
+        private static readonly IEntity<Guid> ReferenceGuidEntity = new FakeEntity<Guid>();
+        private static readonly IEntity<int> ReferenceIntEntity = new FakeEntity<int>();
+        private static readonly IEntity<string> ReferenceStringEntity = new FakeEntity<string>();
 
-        public EntityTests()
+        [Fact]
+        public void Id_HasKeyAttribute()
         {
-            _entity = new Entity<int>();
+            // Arrange & Act & Assert
+            var type = typeof(Entity<>);
+            
+            var property = type.GetProperty("Id");
+            Assert.NotNull(property);
+
+            var attribute = property.GetCustomAttribute<KeyAttribute>();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
-        public void Inherit_IEntity()
+        public void Id_HasDatabaseGeneratedAttribute()
         {
             // Arrange & Act & Assert
-            Assert.IsAssignableFrom<IEntity<int>>(_entity);
+            var type = typeof(Entity<>);
+
+            var property = type.GetProperty("Id");
+            Assert.NotNull(property);
+
+            var attribute = property.GetCustomAttribute<DatabaseGeneratedAttribute>();
+            Assert.NotNull(attribute);
+            Assert.Equal(DatabaseGeneratedOption.Identity, attribute.DatabaseGeneratedOption);
         }
+
+        public static IEnumerable<object[]> EqualsMemberData =>
+            new Collection<object[]>
+            {
+                // Guid
+                new object[]
+                {
+                    default(Guid),
+                    null,
+                    null,
+                    true
+                },
+                new object[]
+                {
+                    default(Guid),
+                    null,
+                    ReferenceGuidEntity,
+                    false
+                },
+                new object[]
+                {
+                    default(Guid),
+                    ReferenceGuidEntity,
+                    null,
+                    false
+                },
+                new object[]
+                {
+                    default(Guid),
+                    ReferenceGuidEntity,
+                    ReferenceGuidEntity,
+                    true
+                },
+                new object[]
+                {
+                    default(Guid),
+                    null,
+                    new FakeEntity<Guid>(),
+                    false
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>(),
+                    null,
+                    false
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>(),
+                    new FakeEntity<Guid>(),
+                    true
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>(),
+                    new FakeEntity<Guid>
+                    {
+                        Id = new Guid("762440ed-9876-4805-b00c-4ae53ba734a4")
+                    },
+                    false
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>
+                    {
+                        Id = new Guid("762440ed-9876-4805-b00c-4ae53ba734a4")
+                    },
+                    new FakeEntity<Guid>(),
+                    false
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>
+                    {
+                        Id = new Guid("00000000-0000-0000-0000-000000000001")
+                    },
+                    new FakeEntity<Guid>
+                    {
+                        Id = new Guid("00000000-0000-0000-0000-000000000001")
+                    },
+                    true
+                },
+                // int
+                new object[]
+                {
+                    default(int),
+                    null,
+                    null,
+                    true
+                },
+                new object[]
+                {
+                    default(int),
+                    null,
+                    ReferenceIntEntity,
+                    false
+                },
+                new object[]
+                {
+                    default(int),
+                    ReferenceIntEntity,
+                    null,
+                    false
+                },
+                new object[]
+                {
+                    default(int),
+                    ReferenceIntEntity,
+                    ReferenceIntEntity,
+                    true
+                },
+                new object[]
+                {
+                    default(int),
+                    null,
+                    new FakeEntity<int>(),
+                    false
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>(),
+                    null,
+                    false
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>(),
+                    new FakeEntity<int>(),
+                    true
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>(),
+                    new FakeEntity<int>
+                    {
+                        Id = 99
+                    },
+                    false
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>
+                    {
+                        Id = 99
+                    },
+                    new FakeEntity<int>(),
+                    false
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>
+                    {
+                        Id = 1
+                    },
+                    new FakeEntity<int>
+                    {
+                        Id = 1
+                    },
+                    true
+                },
+                // string
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    null,
+                    true
+                },
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    ReferenceStringEntity,
+                    false
+                },
+                new object[]
+                {
+                    string.Empty,
+                    ReferenceStringEntity,
+                    null,
+                    false
+                },
+                new object[]
+                {
+                    string.Empty,
+                    ReferenceStringEntity,
+                    ReferenceStringEntity,
+                    true
+                },
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    new FakeEntity<string>(),
+                    false
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>(),
+                    null,
+                    false
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>
+                    {
+                        Id = string.Empty
+                    },
+                    new FakeEntity<string>
+                    {
+                        Id = string.Empty
+                    },
+                    true
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>
+                    {
+                        Id = string.Empty
+                    },
+                    new FakeEntity<string>
+                    {
+                        Id = "Test Id"
+                    },
+                    false
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>
+                    {
+                        Id = "Test Id"
+                    },
+                    new FakeEntity<string>(),
+                    false
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>
+                    {
+                        Id = "Test Id"
+                    },
+                    new FakeEntity<string>
+                    {
+                        Id = "Test Id"
+                    },
+                    true
+                }
+            };
 
         [Theory]
-        [InlineData(typeof(KeyAttribute), null, null)]
-        [InlineData(typeof(DatabaseGeneratedAttribute), nameof(DatabaseGeneratedAttribute.DatabaseGeneratedOption), DatabaseGeneratedOption.Identity)]
-        public void Id_Attribute_Defined(Type attributeType, string attributePropertyName, object attributePropertyValue)
+        [MemberData(nameof(EqualsMemberData))]
+        public void Equals_Success<TKey>(
+            TKey defaultKey,
+            IEntity<TKey> x,
+            IEntity<TKey> y,
+            bool expectedResult)
         {
-            // Arrange & Act & Assert
-            var propertyInfo = TypeAssert.PropertyHasAttribute<Entity<int>>("Id", attributeType);
-
-            if (attributePropertyName != null)
-            {
-                AttributeAssert.ValidateProperty(propertyInfo, attributeType, attributePropertyName, attributePropertyValue);
-            }
-        }
-
-        [Fact]
-        public void Id_Get_Success()
-        {
-            // Arrange & Act & Assert
-            Assert.Equal(default(int), _entity.Id);
-        }
-
-        [Fact]
-        public void Id_Set_Success()
-        {
-            // Arrange
-            const int id = 1;
-
-            // Act
-            _entity.Id = id;
+            // Arrange & Act
+            var result = new FakeEntity<TKey>().Equals(x, y);
 
             // Assert
-            Assert.Equal(id, _entity.Id);
+            Assert.NotNull(defaultKey);
+            Assert.Equal(expectedResult, result);
         }
 
-        [Fact]
-        public void Equals_EntityAndNull_False()
+        public static IEnumerable<object[]> GetHashCodeMemberData =>
+            new Collection<object[]>
+            {
+                // Guid
+                new object[]
+                {
+                    default(Guid),
+                    null,
+                    0
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>(),
+                    0
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>
+                    {
+                        Id = new Guid("00000000-0000-0000-0000-000000000001")
+                    },
+                    16777216
+                },
+                // int
+                new object[]
+                {
+                    default(int),
+                    null,
+                    0
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>(),
+                    0
+                },
+                new object[]
+                {
+                    default(int),
+                    new FakeEntity<int>
+                    {
+                        Id = 99
+                    },
+                    99
+                },
+                // string
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    0
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>
+                    {
+                        Id = string.Empty
+                    },
+                    string.Empty.GetHashCode(StringComparison.Ordinal)
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new FakeEntity<string>
+                    {
+                        Id = "Test Id"
+                    },
+                    "Test Id".GetHashCode(StringComparison.Ordinal)
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(GetHashCodeMemberData))]
+        public void GetHashCode_Success<TKey>(
+            TKey defaultKey,
+            IEntity<TKey> entity,
+            int expectedResult)
         {
-            // Arrange & Act & Assert
-            Assert.False(_entity.Equals(null));
-        }
+            // Arrange & Act
+            var result = new FakeEntity<TKey>().GetHashCode(entity);
 
-        [Fact]
-        public void Equals_TwoEqualEntities_True()
-        {
-            // Arrange
-            const int id = 1;
-
-            var firstEntity = new Entity<int> { Id = id };
-            var secondEntity = new Entity<int> { Id = id };
-
-            // Act & Assert
-            Assert.True(firstEntity.Equals(firstEntity, secondEntity));
-        }
-
-        [Fact]
-        public void Equals_EntityAndNullObject_False()
-        {
-            // Arrange & Act & Assert
-            Assert.False(_entity.Equals(new object()));
-        }
-
-        [Fact]
-        public void GetHashCode_TwoEqualEntities_Equal()
-        {
-            // Arrange
-            const int id = 1;
-
-            var firstEntity = new Entity<int> { Id = id };
-            var secondEntity = new Entity<int> { Id = id };
-
-            // Arrange & Act & Assert
-            Assert.Equal(firstEntity.GetHashCode(firstEntity), secondEntity.GetHashCode(secondEntity));
-        }
-
-        [Fact]
-        public void GetHashCode_TwoNotEqualEntities_NotEqual()
-        {
-            // Arrange
-            var firstEntity = new Entity<int> { Id = 1 };
-            var secondEntity = new Entity<int> { Id = 2 };
-
-            // Arrange & Act & Assert
-            Assert.NotEqual(firstEntity.GetHashCode(firstEntity), secondEntity.GetHashCode(secondEntity));
+            // Assert
+            Assert.NotNull(defaultKey);
+            Assert.Equal(expectedResult, result);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using Aurochses.Xunit;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -9,556 +9,1101 @@ using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
-    public partial class RepositoryTests : IClassFixture<RepositoryFixture>
+    public partial class RepositoryTests
     {
-        private readonly RepositoryFixture _fixture;
-
-        public RepositoryTests(RepositoryFixture fixture)
+        private static readonly Collection<FakeEntity<Guid>> GuidEntities = new Collection<FakeEntity<Guid>>
         {
-            _fixture = fixture;
-        }
-
-        [Fact]
-        public void Inherit_IRepository()
-        {
-            // Arrange
-            var mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
-
-            // Act
-            var repository = new Repository<Entity<int>, int>(mockDbContext.Object, _fixture.DataMapper);
-
-            // Assert
-            Assert.IsAssignableFrom<IRepository<Entity<int>, int>>(repository);
-        }
-
-        private static DbSet<FakeEntity> DbSet => new FakeDbContext(new DbContextOptionsBuilder<FakeDbContext>().UseInMemoryDatabase($"{nameof(RepositoryTests)}{Guid.NewGuid():N}").Options, "dbo").Set<FakeEntity>();
-
-        public static IEnumerable<object[]> QueryParametersMemberData => new[]
-        {
-            new object[]
-            {
-                null,
-                DbSet.AsQueryable(),
-                DbSet.AsQueryable()
-            },
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>(),
-                DbSet.AsQueryable(),
-                DbSet.AsQueryable()
-            },
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Filter = new FilterRule<FakeEntity, int>(),
-                    Sort = new SortRule<FakeEntity, int>(),
-                    Page = new PageRule()
-                },
-                DbSet.AsQueryable(),
-                DbSet.AsQueryable()
-            },
-
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Filter = new FilterRule<FakeEntity, int>
-                    {
-                        Expression = x => x.Id == 1
-                    }
-                },
-                DbSet.AsQueryable().Where(x => x.Id == 1),
-                DbSet.AsQueryable().Where(x => x.Id == 1)
-            },
-
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Sort = new SortRule<FakeEntity, int>
-                    {
-                        Expression = x => x.Id
-                    }
-                },
-                DbSet.AsQueryable().OrderBy(x => (object) x.Id),
-                DbSet.AsQueryable()
-            },
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Sort = new SortRule<FakeEntity, int>
-                    {
-                        SortOrder = SortOrder.Ascending,
-                        Expression = x => x.Id
-                    }
-                },
-                DbSet.AsQueryable().OrderBy(x => (object) x.Id),
-                DbSet.AsQueryable()
-            },
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Sort = new SortRule<FakeEntity, int>
-                    {
-                        SortOrder = SortOrder.Descending,
-                        Expression = x => x.Id
-                    }
-                },
-                DbSet.AsQueryable().OrderByDescending(x => (object) x.Id),
-                DbSet.AsQueryable()
-            },
-
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Page = new PageRule
-                    {
-                        Index = 1,
-                        Size = 5
-                    }
-                },
-                DbSet.AsQueryable().Skip(5 * 1).Take(5),
-                DbSet.AsQueryable()
-            },
-
-            new object[]
-            {
-                new QueryParameters<FakeEntity, int>
-                {
-                    Filter = new FilterRule<FakeEntity, int>
-                    {
-                        Expression = x => x.Id == 1
-                    },
-                    Sort = new SortRule<FakeEntity, int>
-                    {
-                        SortOrder = SortOrder.Descending,
-                        Expression = x => x.Id
-                    },
-                    Page = new PageRule
-                    {
-                        Index = 1,
-                        Size = 5
-                    }
-                },
-                DbSet.AsQueryable().Where(x => x.Id == 1).OrderByDescending(x => (object) x.Id).Skip(5 * 1).Take(5),
-                DbSet.AsQueryable().Where(x => x.Id == 1)
-            }
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000001"), Name = "Test Name One" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000002"), Name = "Test Name Two" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000003"), Name = "Test Name Three" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000004"), Name = "Z Name Four" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000005"), Name = "A Name Five" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000006"), Name = "Test Name" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000007"), Name = "Other Test Name" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000008"), Name = "Test Name" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000009"), Name = "Test Name" },
+            new FakeEntity<Guid> { Id = new Guid("00000000-0000-0000-0000-000000000010"), Name = "New Test Name" }
         };
 
-        private static void ValidateQueryParametersMemberData(IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        private static readonly Collection<FakeEntity<int>> IntEntities = new Collection<FakeEntity<int>>
         {
-            if (queryable == null) throw new ArgumentNullException(nameof(queryable));
-            if (countQueryable == null) throw new ArgumentNullException(nameof(countQueryable));
+            new FakeEntity<int> { Id = 1, Name = "Test Name One" },
+            new FakeEntity<int> { Id = 2, Name = "Test Name Two" },
+            new FakeEntity<int> { Id = 3, Name = "Test Name Three" },
+            new FakeEntity<int> { Id = 4, Name = "Z Name Four" },
+            new FakeEntity<int> { Id = 5, Name = "A Name Five" },
+            new FakeEntity<int> { Id = 6, Name = "Test Name" },
+            new FakeEntity<int> { Id = 7, Name = "Other Test Name" },
+            new FakeEntity<int> { Id = 8, Name = "Test Name" },
+            new FakeEntity<int> { Id = 9, Name = "Test Name" },
+            new FakeEntity<int> { Id = 10, Name = "New Test Name" }
+        };
 
-            Assert.NotNull(queryable);
-            Assert.NotNull(countQueryable);
+        private static readonly Collection<FakeEntity<string>> StringEntities = new Collection<FakeEntity<string>>
+        {
+            new FakeEntity<string> { Id = "Test One", Name = "Test Name One" },
+            new FakeEntity<string> { Id = "Test Two", Name = "Test Name Two" },
+            new FakeEntity<string> { Id = "Test Three", Name = "Test Name Three" },
+            new FakeEntity<string> { Id = "Test Four", Name = "Z Name Four" },
+            new FakeEntity<string> { Id = "Test Five", Name = "A Name Five" },
+            new FakeEntity<string> { Id = "Test Six", Name = "Test Name" },
+            new FakeEntity<string> { Id = "Test Seven", Name = "Other Test Name" },
+            new FakeEntity<string> { Id = "Test Eight", Name = "Test Name" },
+            new FakeEntity<string> { Id = "Test Nine", Name = "Test Name" },
+            new FakeEntity<string> { Id = "Test Ten", Name = "New Test Name" }
+        };
+
+        private readonly Mock<DbContext> _mockDbContext;
+        private readonly Mock<IDataMapper> _mockDataMapper;
+
+        public RepositoryTests()
+        {
+            _mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
+            _mockDataMapper = new Mock<IDataMapper>(MockBehavior.Strict);
         }
 
-        #region ValidateQueryParametersMemberData
-
-        [Fact]
-        public void ValidateQueryParametersMemberData_QueryableIsNull_CatchException()
+        public static IEnumerable<object[]> QueryMemberData
         {
-            // Arrange && Act
-            var exception = Assert.Throws<ArgumentNullException>(() => ValidateQueryParametersMemberData(null, new List<FakeEntity>().AsQueryable()));
+            get
+            {
+                var list = new List<object[]>();
+
+                list.AddRange(NonPagedResultQueryMemberData);
+                list.AddRange(PagedResultQueryMemberData);
+
+                return list;
+            }
+        }
+
+        public static IEnumerable<object[]> NonPagedResultQueryMemberData =>
+            new Collection<object[]>
+            {
+                // Guid
+                new object[]
+                {
+                    default(Guid),
+                    null,
+                    new Collection<FakeEntity<Guid>>(),
+                    new Collection<FakeEntity<Guid>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>(),
+                    new Collection<FakeEntity<Guid>>(),
+                    new Collection<FakeEntity<Guid>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    default(Guid),
+                    null,
+                    GuidEntities,
+                    GuidEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>(),
+                    GuidEntities,
+                    GuidEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Filter = new FilterRule<FakeEntity<Guid>, Guid>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .Where(x => x.Name == "Test Name")
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Sort = new SortRule<FakeEntity<Guid>, Guid>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Sort = new SortRule<FakeEntity<Guid>, Guid>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Filter = new FilterRule<FakeEntity<Guid>, Guid>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<Guid>, Guid>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Filter = new FilterRule<FakeEntity<Guid>, Guid>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<Guid>, Guid>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                // int
+                new object[]
+                {
+                    default(int),
+                    null,
+                    new Collection<FakeEntity<int>>(),
+                    new Collection<FakeEntity<int>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>(),
+                    new Collection<FakeEntity<int>>(),
+                    new Collection<FakeEntity<int>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    default(int),
+                    null,
+                    IntEntities,
+                    IntEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>(),
+                    IntEntities,
+                    IntEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                // string
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    new Collection<FakeEntity<string>>(),
+                    new Collection<FakeEntity<string>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>(),
+                    new Collection<FakeEntity<string>>(),
+                    new Collection<FakeEntity<string>>()
+                        .AsQueryable(),
+                    0
+                },
+                new object[]
+                {
+                    string.Empty,
+                    null,
+                    StringEntities,
+                    StringEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>(),
+                    StringEntities,
+                    StringEntities
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    10
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderBy(x => x.Name)
+                        .AsQueryable(),
+                    3
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .OrderByDescending(x => x.Name)
+                        .AsQueryable(),
+                    3
+                }
+            };
+
+        public static IEnumerable<object[]> PagedResultQueryMemberData =>
+            new Collection<object[]>
+            {
+                // Guid
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Filter = new FilterRule<FakeEntity<Guid>, Guid>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 1,
+                            Size = 2
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .Where(x => x.Name == "Test Name")
+                        .Skip(2 * 1)
+                        .Take(2)
+                        .AsQueryable(),
+                    1
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Sort = new SortRule<FakeEntity<Guid>, Guid>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .OrderBy(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    default(Guid),
+                    new QueryParameters<FakeEntity<Guid>, Guid>
+                    {
+                        Sort = new SortRule<FakeEntity<Guid>, Guid>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    GuidEntities,
+                    GuidEntities
+                        .OrderByDescending(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                // int
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Filter = new FilterRule<FakeEntity<int>, int>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 1,
+                            Size = 2
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .Where(x => x.Name == "Test Name")
+                        .Skip(2 * 1)
+                        .Take(2)
+                        .AsQueryable(),
+                    1
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderBy(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    default(int),
+                    new QueryParameters<FakeEntity<int>, int>
+                    {
+                        Sort = new SortRule<FakeEntity<int>, int>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    IntEntities,
+                    IntEntities
+                        .OrderByDescending(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                // string
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Filter = new FilterRule<FakeEntity<string>, string>
+                        {
+                            Expression = x => x.Name == "Test Name"
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 1,
+                            Size = 2
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .Where(x => x.Name == "Test Name")
+                        .Skip(2 * 1)
+                        .Take(2)
+                        .AsQueryable(),
+                    1
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Ascending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderBy(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                },
+                new object[]
+                {
+                    string.Empty,
+                    new QueryParameters<FakeEntity<string>, string>
+                    {
+                        Sort = new SortRule<FakeEntity<string>, string>
+                        {
+                            SortOrder = SortOrder.Descending,
+                            Expression = x => x.Name
+                        },
+                        Page = new PageRule
+                        {
+                            Index = 2,
+                            Size = 4
+                        }
+                    },
+                    StringEntities,
+                    StringEntities
+                        .OrderByDescending(x => x.Name)
+                        .Skip(4 * 2)
+                        .Take(4)
+                        .AsQueryable(),
+                    2
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(QueryMemberData))]
+        public void Query_Success<TKey>(
+            TKey defaultKey,
+            QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
+            Collection<FakeEntity<TKey>> entities,
+            IQueryable<FakeEntity<TKey>> queryableEntities,
+            int filteredEntitiesCount)
+        {
+            // Arrange
+            var expectedResult = queryableEntities.ToList();
+
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(entities);
+
+            // Act
+            var result = repository.ExposedQuery(queryParameters).ToList();
 
             // Assert
-            Assert.Equal("Value cannot be null. (Parameter 'queryable')", exception.Message);
+            Assert.NotNull(defaultKey);
+            Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
+            Assert.Equal(expectedResult, result, new FakeEntityEqualityComparer<TKey>());
         }
 
-        [Fact]
-        public void ValidateQueryParametersMemberData_CountQueryableIsNull_CatchException()
+        [Theory]
+        [MemberData(nameof(QueryMemberData))]
+        public void QueryModel_Success<TKey>(
+            TKey defaultKey,
+            QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
+            Collection<FakeEntity<TKey>> entities,
+            IQueryable<FakeEntity<TKey>> queryableEntities,
+            int filteredEntitiesCount)
         {
-            // Arrange && Act
-            var exception = Assert.Throws<ArgumentNullException>(() => ValidateQueryParametersMemberData(new List<FakeEntity>().AsQueryable(), null));
+            // Arrange
+            var expectedResult = queryableEntities
+                .Select(
+                    x => new FakeModel<TKey>
+                    {
+                        Id = x.Id,
+                        Name = x.Name
+                    }
+                )
+                .ToList();
+
+            _mockDataMapper
+                .Setup(
+                    x => x.Map<FakeModel<TKey>>(
+                        It.Is<IQueryable<FakeEntity<TKey>>>(
+                            y => !y
+                                .Except(queryableEntities)
+                                .Any()
+                        )
+                    )
+                )
+                .Returns(
+                    queryableEntities
+                        .Select(
+                            x => new FakeModel<TKey>
+                            {
+                                Id = x.Id,
+                                Name = x.Name
+                            }
+                        )
+                );
+
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(entities);
+
+            // Act
+            var result = repository.ExposedQuery<FakeModel<TKey>>(queryParameters).ToList();
 
             // Assert
-            Assert.Equal("Value cannot be null. (Parameter 'countQueryable')", exception.Message);
-        }
+            _mockDataMapper
+                .Verify(
+                    x => x.Map<FakeModel<TKey>>(
+                        It.Is<IQueryable<FakeEntity<TKey>>>(
+                            y => !y
+                                .Except(queryableEntities)
+                                .Any()
+                        )
+                    ),
+                    Times.Once
+                );
 
-        #endregion
-
-        #region Query
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void Query_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act
-            var expected = queryable.Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).Expression.ToString();
-
-            // Assert
-            Assert.Equal(expected, actual);
+            Assert.NotNull(defaultKey);
+            Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
+            Assert.Equal(expectedResult, result, new FakeModelEqualityComparer<TKey>());
         }
 
         [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void QueryTModel_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        [MemberData(nameof(UnitOfWorkTests.TypesMemberData), MemberType = typeof(UnitOfWorkTests))]
+        public void PagedResultQuery_WhenQueryParametersIsNull_ThrowsArgumentNullException<TKey>(
+            TKey defaultKey)
         {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
+            // Arrange
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
-            // Arrange & Act
-            var expected = _fixture.DataMapper.Map<FakeModel>(queryable).Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery<FakeModel>(queryParameters).Expression.ToString();
+            // Act & Assert
+            Assert.NotNull(defaultKey);
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region Get
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void Get_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act & Assert
-            Assert.Equal(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).FirstOrDefault(), _fixture.UnitOfWork.FakeEntityRepository.Get(queryParameters));
-        }
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void GetTModel_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act & Assert
-            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).FirstOrDefault(), _fixture.UnitOfWork.FakeEntityRepository.Get<FakeModel>(queryParameters));
-        }
-
-        #endregion
-
-        #region GetList
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void GetList_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act & Assert
-            Assert.Equal(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).ToList(), _fixture.UnitOfWork.FakeEntityRepository.GetList(queryParameters));
-        }
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void GetListTModel_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act & Assert
-            ObjectAssert.DeepEquals(_fixture.DataMapper.Map<FakeModel>(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters)).ToList(), _fixture.UnitOfWork.FakeEntityRepository.GetList<FakeModel>(queryParameters));
-        }
-
-        #endregion
-
-        #region PagedResultQuery
-
-        [Fact]
-        public void PagedResultQuery_QueryParametersIsNull_ArgumentNullException()
-        {
-            // Arrange & Act & Assert
-            var exception = Assert.Throws<ArgumentNullException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(null));
+            var exception = Assert.Throws<ArgumentNullException>(
+                () => repository.ExposedPagedResultQuery(null)
+            );
             Assert.Equal("queryParameters", exception.ParamName);
-            Assert.Equal("Query Parameters can't be null. (Parameter 'queryParameters')", exception.Message);
-        }
-
-        [Fact]
-        public void PagedResultQuery_QueryParametersPageIsNull_ArgumentNullException()
-        {
-            // Arrange & Act & Assert
-            var exception = Assert.Throws<ArgumentNullException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(new QueryParameters<FakeEntity, int> { Page = null }));
-            Assert.Equal("Query Parameters Page can't be null.", exception.Message);
-        }
-
-        [Fact]
-        public void PagedResultQuery_QueryParametersPageIsNotValid_ArgumentException()
-        {
-            // Arrange & Act & Assert
-            var exception = Assert.Throws<ArgumentException>(() => _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(new QueryParameters<FakeEntity, int> { Page = new PageRule { Size = 0 } }));
-            Assert.Equal("Query Parameters Page is not valid.", exception.Message);
         }
 
         [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void PagedResultQuery_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        [MemberData(nameof(UnitOfWorkTests.TypesMemberData), MemberType = typeof(UnitOfWorkTests))]
+        public void PagedResultQuery_WhenQueryParametersPageIsNull_ThrowsArgumentException<TKey>(
+            TKey defaultKey)
         {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            if (queryParameters?.Page == null || queryParameters.Page.IsValid == false) return;
-
-            // Arrange & Act
-            var expected = queryable.Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).Expression.ToString();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void PagedResultQueryTModel_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            if (queryParameters?.Page == null || queryParameters.Page.IsValid == false) return;
-
-            // Arrange & Act
-            var expected = _fixture.DataMapper.Map<FakeModel>(queryable).Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(queryParameters).Expression.ToString();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region GetPagedList
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void GetPagedList_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            if (queryParameters?.Page == null || queryParameters.Page.IsValid == false) return;
-
             // Arrange
-            var pagedResultQuery = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery(queryParameters);
-
-            var expectedPagedResult = new PagedResult<FakeEntity>
-            {
-                PageIndex = queryParameters.Page.Index,
-                PageSize = queryParameters.Page.Size,
-                Items = pagedResultQuery.ToList(),
-                TotalCount = _fixture.UnitOfWork.FakeEntityRepository.Count(queryParameters)
-            };
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
-            ObjectAssert.DeepEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList(queryParameters));
+            Assert.NotNull(defaultKey);
+
+            var exception = Assert.Throws<ArgumentException>(
+                () => repository.ExposedPagedResultQuery(
+                    new QueryParameters<FakeEntity<TKey>, TKey>
+                    {
+                        Page = null
+                    }
+                )
+            );
+            Assert.Equal("Page can't be null. (Parameter 'queryParameters')", exception.Message);
+            Assert.Equal("queryParameters", exception.ParamName);
         }
 
         [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void GetPagedListTModel_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
+        [MemberData(nameof(UnitOfWorkTests.TypesMemberData), MemberType = typeof(UnitOfWorkTests))]
+        public void PagedResultQuery_WhenQueryParametersPageIsNotValid_ThrowsArgumentException<TKey>(
+            TKey defaultKey)
         {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            if (queryParameters?.Page == null || queryParameters.Page.IsValid == false) return;
-
             // Arrange
-            var pagedResultQuery = _fixture.UnitOfWork.FakeEntityRepository.ProtectedPagedResultQuery<FakeModel>(queryParameters);
-
-            var expectedPagedResult = new PagedResult<FakeModel>
-            {
-                PageIndex = queryParameters.Page.Index,
-                PageSize = queryParameters.Page.Size,
-                Items = pagedResultQuery.ToList(),
-                TotalCount = _fixture.UnitOfWork.FakeEntityRepository.Count(queryParameters)
-            };
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
-            ObjectAssert.DeepEquals(expectedPagedResult, _fixture.UnitOfWork.FakeEntityRepository.GetPagedList<FakeModel>(queryParameters));
+            Assert.NotNull(defaultKey);
+
+            var exception = Assert.Throws<ArgumentException>(
+                () => repository.ExposedPagedResultQuery(
+                    new QueryParameters<FakeEntity<TKey>, TKey>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = -1,
+                            Size = -1
+                        }
+                    }
+                )
+            );
+            Assert.Equal("Page is not valid. (Parameter 'queryParameters')", exception.Message);
+            Assert.Equal("queryParameters", exception.ParamName);
         }
-
-        #endregion
-
-        #region Exists
 
         [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void ExistsQueryParameters_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act & Assert
-            Assert.Equal(_fixture.UnitOfWork.FakeEntityRepository.ProtectedQuery(queryParameters).Any(), _fixture.UnitOfWork.FakeEntityRepository.Exists(queryParameters));
-        }
-
-        #endregion
-
-        #region CountQuery
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void CountQuery_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act
-            var expected = countQueryable.Expression.ToString();
-            var actual = _fixture.UnitOfWork.FakeEntityRepository.ProtectedCountQuery(queryParameters).Expression.ToString();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region Count
-
-        [Theory]
-        [MemberData(nameof(QueryParametersMemberData))]
-        public void Count_Success(QueryParameters<FakeEntity, int> queryParameters, IQueryable<FakeEntity> queryable, IQueryable<FakeEntity> countQueryable)
-        {
-            ValidateQueryParametersMemberData(queryable, countQueryable);
-
-            // Arrange & Act & Assert
-            Assert.Equal(_fixture.UnitOfWork.FakeEntityRepository.ProtectedCountQuery(queryParameters).Count(), _fixture.UnitOfWork.FakeEntityRepository.Count(queryParameters));
-        }
-
-        #endregion
-
-        #region Insert
-
-        [Fact]
-        public void Insert_NewEntity_Inserted()
+        [MemberData(nameof(PagedResultQueryMemberData))]
+        public void PagedResultQuery_Success<TKey>(
+            TKey defaultKey,
+            QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
+            Collection<FakeEntity<TKey>> entities,
+            IQueryable<FakeEntity<TKey>> queryableEntities,
+            int filteredEntitiesCount)
         {
             // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Insert_NewEntity_Inserted));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
+            var expectedResult = queryableEntities.ToList();
 
-            var entity = new FakeEntity();
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var insertedEntity = repository.Insert(entity);
-            fakeDbContext.SaveChanges();
+            var result = repository.ExposedPagedResultQuery(queryParameters).ToList();
 
             // Assert
-            Assert.Equal(entity.Id, insertedEntity.Id);
+            Assert.NotNull(defaultKey);
+            Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
+            Assert.Equal(expectedResult, result, new FakeEntityEqualityComparer<TKey>());
         }
 
-        [Fact]
-        public void Insert_NewEntitiesList_Inserted()
+        [Theory]
+        [MemberData(nameof(UnitOfWorkTests.TypesMemberData), MemberType = typeof(UnitOfWorkTests))]
+        public void PagedResultQueryModel_WhenQueryParametersIsNull_ThrowsArgumentNullException<TKey>(
+            TKey defaultKey)
         {
             // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Insert_NewEntity_Inserted));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
-            var entities = new List<FakeEntity>
+            // Act & Assert
+            Assert.NotNull(defaultKey);
+
+            var exception = Assert.Throws<ArgumentNullException>(
+                () => repository.ExposedPagedResultQuery<FakeModel<TKey>>(null)
+            );
+            Assert.Equal("queryParameters", exception.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(UnitOfWorkTests.TypesMemberData), MemberType = typeof(UnitOfWorkTests))]
+        public void PagedResultQueryModel_WhenQueryParametersPageIsNull_ThrowsArgumentException<TKey>(
+            TKey defaultKey)
+        {
+            // Arrange
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
+
+            // Act & Assert
+            Assert.NotNull(defaultKey);
+
+            var exception = Assert.Throws<ArgumentException>(
+                () => repository.ExposedPagedResultQuery<FakeModel<TKey>>(
+                    new QueryParameters<FakeEntity<TKey>, TKey>
+                    {
+                        Page = null
+                    }
+                )
+            );
+            Assert.Equal("Page can't be null. (Parameter 'queryParameters')", exception.Message);
+            Assert.Equal("queryParameters", exception.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(UnitOfWorkTests.TypesMemberData), MemberType = typeof(UnitOfWorkTests))]
+        public void PagedResultQueryModel_WhenQueryParametersPageIsNotValid_ThrowsArgumentException<TKey>(
+            TKey defaultKey)
+        {
+            // Arrange
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
+
+            // Act & Assert
+            Assert.NotNull(defaultKey);
+
+            var exception = Assert.Throws<ArgumentException>(
+                () => repository.ExposedPagedResultQuery<FakeModel<TKey>>(
+                    new QueryParameters<FakeEntity<TKey>, TKey>
+                    {
+                        Page = new PageRule
+                        {
+                            Index = -1,
+                            Size = -1
+                        }
+                    }
+                )
+            );
+            Assert.Equal("Page is not valid. (Parameter 'queryParameters')", exception.Message);
+            Assert.Equal("queryParameters", exception.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(PagedResultQueryMemberData))]
+        public void PagedResultQueryModel_Success<TKey>(
+            TKey defaultKey,
+            QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
+            Collection<FakeEntity<TKey>> entities,
+            IQueryable<FakeEntity<TKey>> queryableEntities,
+            int filteredEntitiesCount)
+        {
+            // Arrange
+            var expectedResult = queryableEntities
+                .Select(
+                    x => new FakeModel<TKey>
+                    {
+                        Id = x.Id,
+                        Name = x.Name
+                    }
+                )
+                .ToList();
+
+            _mockDataMapper
+                .Setup(
+                    x => x.Map<FakeModel<TKey>>(
+                        It.Is<IQueryable<FakeEntity<TKey>>>(
+                            y => !y
+                                .Except(queryableEntities)
+                                .Any()
+                        )
+                    )
+                )
+                .Returns(
+                    queryableEntities
+                        .Select(
+                            x => new FakeModel<TKey>
+                            {
+                                Id = x.Id,
+                                Name = x.Name
+                            }
+                        )
+                );
+
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(entities);
+
+            // Act
+            var result = repository.ExposedPagedResultQuery<FakeModel<TKey>>(queryParameters);
+
+            // Assert
+            _mockDataMapper
+                .Verify(
+                    x => x.Map<FakeModel<TKey>>(
+                        It.Is<IQueryable<FakeEntity<TKey>>>(
+                            y => !y
+                                .Except(queryableEntities)
+                                .Any()
+                        )
+                    ),
+                    Times.Once
+                );
+
+            Assert.NotNull(defaultKey);
+            Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
+            Assert.Equal(expectedResult, result, new FakeModelEqualityComparer<TKey>());
+        }
+
+        [Theory]
+        [MemberData(nameof(QueryMemberData))]
+        public void CountQuery_Success<TKey>(
+            TKey defaultKey,
+            QueryParameters<FakeEntity<TKey>, TKey> queryParameters,
+            Collection<FakeEntity<TKey>> entities,
+            IQueryable<FakeEntity<TKey>> queryableEntities,
+            int filteredEntitiesCount)
+        {
+            // Arrange
+            var query = entities.AsQueryable();
+
+            if (queryParameters?.Filter?.Expression != null)
             {
-                new FakeEntity(),
-                new FakeEntity()
-            };
+                query = query.Where(queryParameters.Filter.Expression);
+            }
+
+            var expectedResult = query.Count();
+
+            var repository = (FakeRepository<FakeEntity<TKey>, TKey>) GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            repository.Insert(entities);
-            fakeDbContext.SaveChanges();
+            var result = repository.ExposedCountQuery(queryParameters).Count();
 
             // Assert
-            Assert.Equal(fakeDbContext.Set<FakeEntity>().Count(), entities.Count);
+            Assert.NotNull(defaultKey);
+            Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
+            Assert.Equal(expectedResult, result);
         }
 
-        #endregion
-
-        #region Update
-
-        [Fact]
-        public void Update_ExistingEntity_Updated()
+        private Repository<TEntity, TKey> GetRepository<TEntity, TKey>(ICollection<TEntity> entities)
+            where TEntity : class, IEntity<TKey>
         {
-            // Arrange
-            const int id = 10;
+            var mockDbSet = new Mock<DbSet<TEntity>>(MockBehavior.Strict);
 
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Update_ExistingEntity_Updated));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var entity = fakeDbContext.Add(new FakeEntity { Id = id }).Entity;
-            fakeDbContext.SaveChanges();
+            mockDbSet.As<IQueryable<TEntity>>().Setup(x => x.Provider).Returns(entities.AsQueryable().Provider);
+            mockDbSet.As<IQueryable<TEntity>>().Setup(x => x.Expression).Returns(entities.AsQueryable().Expression);
+            mockDbSet.As<IQueryable<TEntity>>().Setup(x => x.ElementType).Returns(entities.AsQueryable().ElementType);
+            mockDbSet.As<IQueryable<TEntity>>().Setup(x => x.GetEnumerator()).Returns(entities.AsQueryable().GetEnumerator());
 
-            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
+            _mockDbContext
+                .Setup(x => x.Set<TEntity>())
+                .Returns(() => mockDbSet.Object);
 
-            // Act
-            entity = repository.Update(entity);
-            fakeDbContext.SaveChanges();
-
-            // Assert
-            Assert.Equal(id, entity.Id);
+            return new FakeRepository<TEntity, TKey>(
+                _mockDbContext.Object,
+                _mockDataMapper.Object
+            );
         }
-
-        #endregion
-
-        #region Delete
-
-        [Fact]
-        public void Delete_ExistingEntity_Deleted()
-        {
-            // Arrange
-            const int id = 30;
-
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Delete_ExistingEntity_Deleted));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var entity = fakeDbContext.Add(new FakeEntity { Id = id }).Entity;
-            fakeDbContext.SaveChanges();
-
-            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
-
-            // Act
-            repository.Delete(entity);
-            fakeDbContext.SaveChanges();
-
-            // Assert
-            Assert.False(fakeDbContext.Set<FakeEntity>().Any(x => x.Id == id));
-        }
-
-        [Fact]
-        public void Delete_ExistingDetachedEntity_Deleted()
-        {
-            // Arrange
-            const int id = 40;
-
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Delete_ExistingEntity_Deleted));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            var entity = fakeDbContext.Add(new FakeEntity { Id = id }).Entity;
-            fakeDbContext.SaveChanges();
-
-            fakeDbContext.Entry(entity).State = EntityState.Detached;
-
-            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
-
-            // Act
-            repository.Delete(entity);
-            fakeDbContext.SaveChanges();
-
-            // Assert
-            Assert.False(fakeDbContext.Set<FakeEntity>().Any(x => x.Id == id));
-        }
-
-        [Fact]
-        public void Delete_ExistingEntities_Deleted()
-        {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Delete_ExistingEntity_Deleted));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-            fakeDbContext.AddRange(new List<FakeEntity>
-            {
-                new FakeEntity { Id = 1 },
-                new FakeEntity { Id = 2 },
-                new FakeEntity { Id = 3 }
-            });
-            fakeDbContext.SaveChanges();
-
-            var repository = new Repository<FakeEntity, int>(fakeDbContext, _fixture.DataMapper);
-
-            // Act
-            repository.Delete(new List<int> {2, 3});
-            fakeDbContext.SaveChanges();
-
-            // Assert
-            Assert.Equal(1, fakeDbContext.Set<FakeEntity>().Count());
-            Assert.Equal(1, fakeDbContext.Set<FakeEntity>().FirstOrDefault()?.Id);
-        }
-
-        #endregion
     }
 }

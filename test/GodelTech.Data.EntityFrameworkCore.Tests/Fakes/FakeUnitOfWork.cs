@@ -1,30 +1,30 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
 {
     public class FakeUnitOfWork : UnitOfWork
     {
-        public FakeUnitOfWork(
-            Func<DbContext, FakeRepository> fakeEntityRepository,
-            DbContextOptions dbContextOptions,
-            string schemaName)
-            : base(new FakeDbContext(dbContextOptions, schemaName))
+        public FakeUnitOfWork(DbContext dbContext)
+            : base(dbContext)
         {
-            RegisterRepository(fakeEntityRepository(DbContext));
+
         }
 
-        public FakeUnitOfWork()
-            : base(null)
+        public void ExposedRegisterRepository<TEntity, TKey>(IRepository<TEntity, TKey> repository)
+            where TEntity : class, IEntity<TKey>
         {
-            RegisterRepository(new FakeRepository(DbContext, new FakeDataMapper()));
+            RegisterRepository(repository);
         }
 
-        public FakeRepository FakeEntityRepository => (FakeRepository)GetRepository<FakeEntity, int>();
-
-        public void DoNotDispose()
+        public IRepository<TEntity, TKey> ExposedGetRepository<TEntity, TKey>()
+            where TEntity : class, IEntity<TKey>
         {
-            Dispose(false);
+            return GetRepository<TEntity, TKey>();
+        }
+
+        public void ExposedDispose(bool disposing)
+        {
+            Dispose(disposing);
         }
     }
 }

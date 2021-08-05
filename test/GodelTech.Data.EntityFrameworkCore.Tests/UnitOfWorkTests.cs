@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -6,119 +8,202 @@ using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
-    public class UnitOfWorkTests
+    public sealed class UnitOfWorkTests : IDisposable
     {
-        [Fact]
-        public void Inherit_IUnitOfWork()
+        private readonly Mock<DbContext> _mockDbContext;
+
+        private readonly UnitOfWork _unitOfWork;
+
+        public UnitOfWorkTests()
         {
-            // Arrange
-            var mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
+            _mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
 
-            // Act
-            var unitOfWork = new UnitOfWork(mockDbContext.Object);
+            _mockDbContext
+                .Setup(x => x.Dispose());
 
-            // Assert
-            Assert.IsAssignableFrom<IUnitOfWork>(unitOfWork);
+            _unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+        }
+        
+        public void Dispose()
+        {
+            _unitOfWork.Dispose();
         }
 
+        // https://blog.ingeniumsoftware.dev/unit-testing-finalizers-in-csharp/
         [Fact]
-        public void Commit_InsertNewEntity_AffectedOneRow()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+        public void Finalizer_DisposeWithFalse()
         {
             // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_InsertNewEntity_AffectedOneRow));
-            var dataMapper = new FakeDataMapper();
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext, dataMapper),
-                dbContextOptionsBuilder.Options,
-                "dbo"
-            );
-
-            var entity = new FakeEntity();
-
-            unitOfWork.FakeEntityRepository.Insert(entity);
-
-            // Act & Assert
-            Assert.Equal(1, unitOfWork.Commit());
-        }
-
-        [Fact]
-        public void Commit_UpdateNonexistentEntity_DataStorageException()
-        {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Commit_UpdateNonexistentEntity_DataStorageException));
-            var dataMapper = new FakeDataMapper();
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext, dataMapper),
-                dbContextOptionsBuilder.Options,
-                "dbo"
-            );
-
-            var entity = new FakeEntity { Id = -1 };
-
-            unitOfWork.FakeEntityRepository.Update(entity);
-
-            // Act & Assert
-            Assert.Throws<DataStorageException>(() => unitOfWork.Commit());
-        }
-
-        [Fact]
-        public void Dispose_UnitOfWork_Success()
-        {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Dispose_UnitOfWork_Success));
-            var fakeDbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
-
-            UnitOfWork unitOfWork;
-
-            using (unitOfWork = new UnitOfWork(fakeDbContext))
+            WeakReference<FakeUnitOfWork> weak = null;
+            Action dispose = () =>
             {
-                unitOfWork.Commit();
-            }
+                // This will go out of scope after dispose() is executed
+                var unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+
+                weak = new WeakReference<FakeUnitOfWork>(unitOfWork, true);
+            };
 
             // Act
-            unitOfWork.Dispose();
+            dispose();
+            GC.Collect(0, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
 
             // Assert
-            Assert.Throws<ObjectDisposedException>(() => unitOfWork.Commit());
+            _mockDbContext
+                .Verify(
+                    x => x.Dispose(),
+                    Times.Never
+                );
         }
 
         [Fact]
-        public void Dispose_UnitOfWorkWithNullDbContext_Success()
+        public void Commit()
         {
             // Arrange
-            FakeUnitOfWork unitOfWork;
+            const int expectedResult = 1;
 
-            using (unitOfWork = new FakeUnitOfWork())
-            {
-                Assert.NotNull(unitOfWork.FakeEntityRepository);
-            }
+            _mockDbContext
+                .Setup(
+                    x => x.SaveChanges()
+                )
+                .Returns(expectedResult);
 
             // Act
-            unitOfWork.Dispose();
+            var result = _unitOfWork.Commit();
 
             // Assert
-            var repository = unitOfWork.FakeEntityRepository;
+            _mockDbContext
+                .Verify(
+                    x => x.SaveChanges(),
+                    Times.Once
+                );
 
-            Assert.NotNull(repository);
+            Assert.Equal(expectedResult, result);
         }
 
         [Fact]
-        public void Dispose_FalseDispose_Success()
+        public void Commit_WhenDbUpdateException_ThrowsDataStorageException()
         {
             // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(Dispose_FalseDispose_Success));
-            var dataMapper = new FakeDataMapper();
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext, dataMapper),
-                dbContextOptionsBuilder.Options,
-                "dbo"
+            var expectedInnerException = new DbUpdateException("Test Message");
+
+            _mockDbContext
+                .Setup(
+                    x => x.SaveChanges()
+                )
+                .Throws(expectedInnerException);
+
+            // Act
+            var exception = Assert.Throws<DataStorageException>(
+                () => _unitOfWork.Commit()
             );
 
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.SaveChanges(),
+                    Times.Once
+                );
+
+            Assert.Equal(expectedInnerException.Message, exception.Message);
+            Assert.Equal(expectedInnerException, exception.InnerException);
+        }
+
+        public static IEnumerable<object[]> TypesMemberData =>
+            new Collection<object[]>
+            {
+                // Guid
+                new object[]
+                {
+                    default(Guid)
+                },
+                // int
+                new object[]
+                {
+                    default(int)
+                },
+                // string
+                new object[]
+                {
+                    string.Empty
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(TypesMemberData))]
+        public void Repositories_Success<TKey>(TKey defaultKey)
+        {
+            // Arrange
+            var mockDataMapper = new Mock<IDataMapper>(MockBehavior.Strict);
+
+            var repository = new Repository<IEntity<TKey>, TKey>(
+                _mockDbContext.Object,
+                mockDataMapper.Object
+            );
+
+            var fakeUnitOfWork = (FakeUnitOfWork) _unitOfWork;
+
             // Act
-            unitOfWork.DoNotDispose();
+            fakeUnitOfWork.ExposedRegisterRepository(repository);
+            var result = fakeUnitOfWork.ExposedGetRepository<IEntity<TKey>, TKey>();
 
             // Assert
-            Assert.NotNull(unitOfWork.FakeEntityRepository);
+            Assert.NotNull(defaultKey);
+            Assert.Equal(repository, result);
+        }
+
+        [Fact]
+        public void Dispose_WithFalse()
+        {
+            // Arrange
+            var fakeUnitOfWork = (FakeUnitOfWork) _unitOfWork;
+
+            // Act
+            fakeUnitOfWork.ExposedDispose(false);
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.Dispose(),
+                    Times.Never
+                );
+        }
+
+        [Fact]
+        public void Dispose_WhenIsDisposed()
+        {
+            // Arrange
+            var fakeUnitOfWork = (FakeUnitOfWork) _unitOfWork;
+
+            // Act
+            fakeUnitOfWork.Dispose();
+
+            fakeUnitOfWork.ExposedDispose(true);
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.Dispose(),
+                    Times.Once
+                );
+        }
+
+        [Fact]
+        public void Dispose_WhenDbContextIsNull()
+        {
+            // Arrange
+            using var fakeUnitOfWork = new FakeUnitOfWork(null);
+
+            // Act
+            fakeUnitOfWork.ExposedDispose(true);
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.Dispose(),
+                    Times.Never
+                );
         }
     }
 }

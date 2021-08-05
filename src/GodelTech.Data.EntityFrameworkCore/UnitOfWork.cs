@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
+[assembly: CLSCompliant(false)]
 namespace GodelTech.Data.EntityFrameworkCore
 {
     /// <summary>
     /// UnitOfWork for data layer.
     /// </summary>
     /// <seealso cref="IUnitOfWork" />
-    public class UnitOfWork : IUnitOfWork
+    public abstract class UnitOfWork : IUnitOfWork
     {
         private readonly IDictionary<Type, object> _repositories;
         private bool _isDisposed;
@@ -18,7 +19,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
         /// </summary>
         /// <param name="dbContext">The database context.</param>
-        public UnitOfWork(DbContext dbContext)
+        protected UnitOfWork(DbContext dbContext)
         {
             _repositories = new Dictionary<Type, object>();
             DbContext = dbContext;
@@ -39,30 +40,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         protected DbContext DbContext { get; }
 
         /// <summary>
-        /// Registers repository instance.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-        /// <typeparam name="TType">The type of the T type.</typeparam>
-        /// <param name="repository">The repository.</param>
-        protected void RegisterRepository<TEntity, TType>(IRepository<TEntity, TType> repository)
-            where TEntity : class, IEntity<TType>
-        {
-            _repositories[typeof(TEntity)] = repository;
-        }
-
-        /// <summary>
-        /// Gets the repository for specified entity type.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
-        /// <typeparam name="TType">The type of the T type.</typeparam>
-        /// <returns>IRepository{TEntity, TType}.</returns>
-        public virtual IRepository<TEntity, TType> GetRepository<TEntity, TType>()
-            where TEntity : class, IEntity<TType>
-        {
-            return (IRepository<TEntity, TType>)_repositories[typeof(TEntity)];
-        }
-
-        /// <summary>
         /// Commits all changes on the DB.
         /// </summary>
         /// <returns>Number of rows affected.</returns>
@@ -77,7 +54,7 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
             catch (DbUpdateException exception)
             {
-                throw new DataStorageException(exception);
+                throw new DataStorageException(exception.Message, exception);
             }
 
             return cnt;
@@ -98,7 +75,7 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
             catch (DbUpdateException exception)
             {
-                throw new DataStorageException(exception);
+                throw new DataStorageException(exception.Message, exception);
             }
 
             return cnt;
@@ -111,6 +88,30 @@ namespace GodelTech.Data.EntityFrameworkCore
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Registers repository instance.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TKey">The type of the T key.</typeparam>
+        /// <param name="repository">The repository.</param>
+        protected void RegisterRepository<TEntity, TKey>(IRepository<TEntity, TKey> repository)
+            where TEntity : class, IEntity<TKey>
+        {
+            _repositories[typeof(TEntity)] = repository;
+        }
+
+        /// <summary>
+        /// Gets the repository for specified entity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TKey">The type of the T key.</typeparam>
+        /// <returns>IRepository{TEntity, TKey}.</returns>
+        protected virtual IRepository<TEntity, TKey> GetRepository<TEntity, TKey>()
+            where TEntity : class, IEntity<TKey>
+        {
+            return (IRepository<TEntity, TKey>) _repositories[typeof(TEntity)];
         }
 
         #region Dispose
@@ -141,16 +142,8 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
 
             // free managed resources 
-            DisposeDbContext();
-            _isDisposed = true;
-        }
-
-        /// <summary>
-        /// Disposes the database context.
-        /// </summary>
-        private void DisposeDbContext()
-        {
             DbContext?.Dispose();
+            _isDisposed = true;
         }
 
         #endregion

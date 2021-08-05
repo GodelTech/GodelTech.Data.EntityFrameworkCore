@@ -1,32 +1,50 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
     public class DbContextBaseTests
     {
-        [Fact]
-        public void Inherit_DbContext()
+        public static IEnumerable<object[]> ConstructorMemberData =>
+            new Collection<object[]>
+            {
+                new object[]
+                {
+                    new FakeDbContext(
+                        new DbContextOptions<FakeDbContext>(),
+                        null
+                    ),
+                    null
+                },
+                new object[]
+                {
+                    new FakeDbContext(
+                        new DbContextOptions<FakeDbContext>(),
+                        string.Empty
+                    ),
+                    string.Empty
+                },
+                new object[]
+                {
+                    new FakeDbContext(
+                        new DbContextOptions<FakeDbContext>(),
+                        "Test SchemaName"
+                    ),
+                    "Test SchemaName"
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(ConstructorMemberData))]
+        public void Constructor(
+            DbContextBase item,
+            string expectedSchemaName)
         {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContextBase>();
-            var dbContext = new DbContextBase(dbContextOptionsBuilder.Options, "dbo");
-
-            // Act & Assert
-            Assert.IsAssignableFrom<DbContext>(dbContext);
-        }
-
-        [Fact]
-        public void SchemaName_Get_Success()
-        {
-            // Arrange
-            const string schemaName = "dbo";
-
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContextBase>();
-            var dbContext = new DbContextBase(dbContextOptionsBuilder.Options, schemaName);
-
-            // Act & Assert
-            Assert.Equal(schemaName, dbContext.SchemaName);
+            // Arrange & Act & Assert
+            Assert.Equal(expectedSchemaName, item?.SchemaName);
         }
     }
 }

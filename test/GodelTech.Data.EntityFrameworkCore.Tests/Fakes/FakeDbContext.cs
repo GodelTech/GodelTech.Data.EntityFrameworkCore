@@ -9,10 +9,5 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
         {
 
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<FakeEntity>();
-        }
     }
 }

@@ -8,10 +8,11 @@
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
 		<!-- SonarQube needs this -->
-		<ProjectGuid>{00000000-0000-0000-0000-000000000002}</ProjectGuid>
+		<ProjectGuid>{00000000-0000-0000-0000-000000000003}</ProjectGuid>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="10.1.1" />
 		<PackageReference Include="coverlet.collector" Version="3.0.3">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
@@ -20,18 +21,18 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.8" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-		<PackageReference Include="MockQueryable.Moq" Version="5.0.1" />
-		<PackageReference Include="Moq" Version="4.16.1" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
-			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\GodelTech.Data.EntityFrameworkCore\GodelTech.Data.EntityFrameworkCore.csproj" />
+	  <ProjectReference Include="..\..\src\GodelTech.Data.EntityFrameworkCore\GodelTech.Data.EntityFrameworkCore.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -42,6 +43,15 @@
 		<Compile Update="RepositoryAsyncTests.*.cs">
 			<DependentUpon>RepositoryAsyncTests.cs</DependentUpon>
 		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="RepositoryTests - Copy.Insert.cs">
+	    <DependentUpon>RepositoryTests.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="RepositoryTests - Copy.Update.cs">
+	    <DependentUpon>RepositoryTests.cs</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 </Project>

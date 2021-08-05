@@ -1,7 +1,9 @@
 ﻿namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
 {
-    public class FakeModel
+    public class FakeModel<TKey>
     {
-        public int Id { get; set; }
+        public TKey Id { get; set; }
+
+        public string Name { get; set; }
     }
 }

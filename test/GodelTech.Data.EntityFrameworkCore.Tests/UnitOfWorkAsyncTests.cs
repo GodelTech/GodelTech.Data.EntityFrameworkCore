@@ -1,50 +1,84 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests
 {
-    public class UnitOfWorkAsyncTests
+    public sealed class UnitOfWorkAsyncTests : IDisposable
     {
-        [Fact]
-        public async Task CommitAsync_InsertNewEntity_AffectedOneRow()
+        private readonly Mock<DbContext> _mockDbContext;
+
+        private readonly UnitOfWork _unitOfWork;
+
+        public UnitOfWorkAsyncTests()
         {
-            // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(CommitAsync_InsertNewEntity_AffectedOneRow));
-            var dataMapper = new FakeDataMapper();
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext, dataMapper),
-                dbContextOptionsBuilder.Options,
-                "dbo"
-            );
+            _mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
 
-            var entity = new FakeEntity();
+            _mockDbContext
+                .Setup(x => x.Dispose());
 
-            await unitOfWork.FakeEntityRepository.InsertAsync(entity);
-
-            // Act & Assert
-            Assert.Equal(1, await unitOfWork.CommitAsync());
+            _unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+        }
+        
+        public void Dispose()
+        {
+            _unitOfWork.Dispose();
         }
 
         [Fact]
-        public async Task CommitAsync_UpdateNonexistentEntity_DataStorageException()
+        public async Task CommitAsync()
         {
             // Arrange
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(nameof(CommitAsync_UpdateNonexistentEntity_DataStorageException));
-            var dataMapper = new FakeDataMapper();
-            var unitOfWork = new FakeUnitOfWork(
-                dbContext => new FakeRepository(dbContext, dataMapper),
-                dbContextOptionsBuilder.Options,
-                "dbo"
+            const int expectedResult = 1;
+
+            _mockDbContext
+                .Setup(
+                    x => x.SaveChangesAsync(default)
+                )
+                .ReturnsAsync(expectedResult);
+
+            // Act
+            var result = await _unitOfWork.CommitAsync();
+
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.SaveChangesAsync(default),
+                    Times.Once
+                );
+
+            Assert.Equal(expectedResult, result);
+        }
+
+        [Fact]
+        public async Task CommitAsync_WhenDbUpdateException_ThrowsDataStorageException()
+        {
+            // Arrange
+            var expectedInnerException = new DbUpdateException("Test Message");
+
+            _mockDbContext
+                .Setup(
+                    x => x.SaveChangesAsync(default)
+                )
+                .Throws(expectedInnerException);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<DataStorageException>(
+                () => _unitOfWork.CommitAsync()
             );
 
-            var entity = new FakeEntity { Id = -1 };
+            // Assert
+            _mockDbContext
+                .Verify(
+                    x => x.SaveChangesAsync(default),
+                    Times.Once
+                );
 
-            unitOfWork.FakeEntityRepository.Update(entity);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<DataStorageException>(async () => await unitOfWork.CommitAsync());
+            Assert.Equal(expectedInnerException.Message, exception.Message);
+            Assert.Equal(expectedInnerException, exception.InnerException);
         }
     }
 }
