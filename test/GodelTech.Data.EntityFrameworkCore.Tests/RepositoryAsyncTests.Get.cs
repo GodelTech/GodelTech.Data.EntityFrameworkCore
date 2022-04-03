@@ -73,7 +73,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                             }
                         )
                         .BuildMock()
-                        .Object
                 );
 
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
