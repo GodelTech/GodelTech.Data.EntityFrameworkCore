@@ -20,9 +20,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public Repository<TEntity, TKey> GetRepository<TEntity, TKey>(ICollection<TEntity> entities)
             where TEntity : class, IEntity<TKey>
         {
-            var mockData = entities.AsQueryable().BuildMock();
-
-            var mockDbSet = mockData.Object.BuildMockDbSet();
+            var mockDbSet = entities.AsQueryable().BuildMockDbSet();
 
             _mockDbContext
                 .Setup(x => x.Set<TEntity>())

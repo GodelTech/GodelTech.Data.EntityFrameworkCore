@@ -26,15 +26,15 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
 		<!-- SonarQube needs this -->
-		<ProjectGuid>{00000000-0000-0000-0000-000000000001}</ProjectGuid>
+		<ProjectGuid>{00000000-0000-0000-0000-000000000010}</ProjectGuid>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="GodelTech.Data" Version="5.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+		<PackageReference Include="GodelTech.Data" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.15" />
 
 		<!-- Source Link needs this -->
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
