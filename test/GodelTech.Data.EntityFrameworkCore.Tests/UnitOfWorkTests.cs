@@ -52,13 +52,13 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange
             WeakReference<FakeUnitOfWork> weak = null;
-            Action dispose = () =>
+            void dispose()
             {
                 // This will go out of scope after dispose() is executed
                 var unitOfWork = new FakeUnitOfWork(_mockDbContextFactory.Object);
 
                 weak = new WeakReference<FakeUnitOfWork>(unitOfWork, true);
-            };
+            }
 
             // Act
             dispose();
