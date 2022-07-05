@@ -10,19 +10,22 @@ namespace GodelTech.Data.EntityFrameworkCore
     /// UnitOfWork for data layer.
     /// </summary>
     /// <seealso cref="IUnitOfWork" />
-    public abstract class UnitOfWork : IUnitOfWork
+    public abstract class UnitOfWork<TDbContext> : IUnitOfWork
+        where TDbContext : DbContext
     {
         private readonly IDictionary<Type, object> _repositories;
         private bool _isDisposed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
+        /// Initializes a new instance of the <see cref="UnitOfWork{TDbContext}"/> class.
         /// </summary>
-        /// <param name="dbContext">The database context.</param>
-        protected UnitOfWork(DbContext dbContext)
+        /// <param name="dbContextFactory">The database context factory.</param>
+        protected UnitOfWork(IDbContextFactory<TDbContext> dbContextFactory)
         {
+            if (dbContextFactory == null) throw new ArgumentNullException(nameof(dbContextFactory));
+
             _repositories = new Dictionary<Type, object>();
-            DbContext = dbContext;
+            DbContext = dbContextFactory.CreateDbContext();
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Gets the database context.
         /// </summary>
         /// <value>The database context.</value>
-        protected DbContext DbContext { get; }
+        protected TDbContext DbContext { get; }
 
         /// <summary>
         /// Commits all changes on the DB.
