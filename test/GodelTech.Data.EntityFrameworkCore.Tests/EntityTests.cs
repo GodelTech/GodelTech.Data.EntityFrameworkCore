@@ -20,7 +20,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange & Act & Assert
             var type = typeof(Entity<>);
-            
+
             var property = type.GetProperty("Id");
             Assert.NotNull(property);
 

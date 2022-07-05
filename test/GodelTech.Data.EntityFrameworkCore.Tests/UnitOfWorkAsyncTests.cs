@@ -26,7 +26,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             _unitOfWork = new FakeUnitOfWork(mockDbContextFactory.Object);
         }
-        
+
         public void Dispose()
         {
             _unitOfWork.Dispose();
