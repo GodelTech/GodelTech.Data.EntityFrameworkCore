@@ -12,21 +12,37 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
     {
         private readonly Mock<DbContext> _mockDbContext;
 
-        private readonly UnitOfWork _unitOfWork;
+        private readonly Mock<IDbContextFactory<DbContext>> _mockDbContextFactory;
+
+        private readonly UnitOfWork<DbContext> _unitOfWork;
 
         public UnitOfWorkTests()
         {
             _mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
-
             _mockDbContext
                 .Setup(x => x.Dispose());
 
-            _unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+            _mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
+            _mockDbContextFactory
+                .Setup(x => x.CreateDbContext())
+                .Returns(_mockDbContext.Object);
+
+            _unitOfWork = new FakeUnitOfWork(_mockDbContextFactory.Object);
         }
-        
+
         public void Dispose()
         {
             _unitOfWork.Dispose();
+        }
+
+        [Fact]
+        public void Constructor_ThrowsArgumentNullException()
+        {
+            // Arrange & Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(
+                () => new FakeUnitOfWork(null)
+            );
+            Assert.Equal("dbContextFactory", exception.ParamName);
         }
 
         // https://blog.ingeniumsoftware.dev/unit-testing-finalizers-in-csharp/
@@ -36,13 +52,13 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         {
             // Arrange
             WeakReference<FakeUnitOfWork> weak = null;
-            Action dispose = () =>
+            void dispose()
             {
                 // This will go out of scope after dispose() is executed
-                var unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+                var unitOfWork = new FakeUnitOfWork(_mockDbContextFactory.Object);
 
                 weak = new WeakReference<FakeUnitOfWork>(unitOfWork, true);
-            };
+            }
 
             // Act
             dispose();
@@ -193,7 +209,12 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public void Dispose_WhenDbContextIsNull()
         {
             // Arrange
-            using var fakeUnitOfWork = new FakeUnitOfWork(null);
+            var mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
+            mockDbContextFactory
+                .Setup(x => x.CreateDbContext())
+                .Returns(() => null);
+
+            using var fakeUnitOfWork = new FakeUnitOfWork(mockDbContextFactory.Object);
 
             // Act
             fakeUnitOfWork.ExposedDispose(true);

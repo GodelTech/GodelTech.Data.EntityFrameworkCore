@@ -11,18 +11,22 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
     {
         private readonly Mock<DbContext> _mockDbContext;
 
-        private readonly UnitOfWork _unitOfWork;
+        private readonly UnitOfWork<DbContext> _unitOfWork;
 
         public UnitOfWorkAsyncTests()
         {
             _mockDbContext = new Mock<DbContext>(MockBehavior.Strict);
-
             _mockDbContext
                 .Setup(x => x.Dispose());
 
-            _unitOfWork = new FakeUnitOfWork(_mockDbContext.Object);
+            var mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
+            mockDbContextFactory
+                .Setup(x => x.CreateDbContext())
+                .Returns(_mockDbContext.Object);
+
+            _unitOfWork = new FakeUnitOfWork(mockDbContextFactory.Object);
         }
-        
+
         public void Dispose()
         {
             _unitOfWork.Dispose();

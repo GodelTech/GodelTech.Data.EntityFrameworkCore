@@ -3,17 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
 {
-    public class FakeUnitOfWork : UnitOfWork
+    public class FakeUnitOfWork : UnitOfWork<FakeDbContext>
     {
         public FakeUnitOfWork(
             Func<DbContext, Repository<FakeEntity<Guid>, Guid>> fakeGuidEntityRepository,
             Func<DbContext, Repository<FakeEntity<int>, int>> fakeIntEntityRepository,
             Func<DbContext, Repository<FakeEntity<string>, string>> fakeStringEntityRepository,
-            DbContextOptions dbContextOptions,
-            string schemaName)
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            : base(new FakeDbContext(dbContextOptions, schemaName))
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            IDbContextFactory<FakeDbContext> dbContextFactory)
+            : base(dbContextFactory)
         {
             if (fakeGuidEntityRepository == null) throw new ArgumentNullException(nameof(fakeGuidEntityRepository));
             if (fakeIntEntityRepository == null) throw new ArgumentNullException(nameof(fakeIntEntityRepository));

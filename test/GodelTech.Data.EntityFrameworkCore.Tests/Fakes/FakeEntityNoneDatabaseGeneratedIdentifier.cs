@@ -2,6 +2,6 @@
 {
     public class FakeEntityNoneDatabaseGeneratedIdentifier<TKey> : EntityNoneDatabaseGeneratedIdentifier<TKey>
     {
-        
+
     }
 }

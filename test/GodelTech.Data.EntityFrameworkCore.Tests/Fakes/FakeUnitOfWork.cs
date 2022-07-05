@@ -2,10 +2,10 @@
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
 {
-    public class FakeUnitOfWork : UnitOfWork
+    public class FakeUnitOfWork : UnitOfWork<DbContext>
     {
-        public FakeUnitOfWork(DbContext dbContext)
-            : base(dbContext)
+        public FakeUnitOfWork(IDbContextFactory<DbContext> dbContextFactory)
+            : base(dbContextFactory)
         {
 
         }

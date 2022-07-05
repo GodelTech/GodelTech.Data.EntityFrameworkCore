@@ -1,6 +1,5 @@
 ﻿using System;
 using AutoMapper;
-using AutoMapper.Configuration;
 using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,12 +25,13 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<FakeDbContext>()
                 .UseInMemoryDatabase($"{nameof(RepositoryTests)}{Guid.NewGuid():N}");
 
+            var dbContextFactory = new FakeDbContextFactory(dbContextOptionsBuilder.Options);
+
             _unitOfWork = new FakeUnitOfWork(
                 dbContext => new Repository<FakeEntity<Guid>, Guid>(dbContext, dataMapper),
                 dbContext => new Repository<FakeEntity<int>, int>(dbContext, dataMapper),
                 dbContext => new Repository<FakeEntity<string>, string>(dbContext, dataMapper),
-                dbContextOptionsBuilder.Options,
-                "dbo"
+                dbContextFactory
             );
         }
 

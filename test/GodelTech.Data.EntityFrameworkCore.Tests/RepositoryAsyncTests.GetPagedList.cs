@@ -103,7 +103,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             Assert.Equal(queryParameters?.Page.Size, result.PageSize);
             Assert.Equal(expectedResult, result.Items, new FakeEntityEqualityComparer<TKey>());
             Assert.Equal(
-                queryParameters?.Page.Size * queryParameters?.Page.Index + filteredEntitiesCount,
+                (queryParameters?.Page.Size * queryParameters?.Page.Index) + filteredEntitiesCount,
                 result.TotalCount
             );
         }
@@ -241,7 +241,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             Assert.Equal(queryParameters?.Page.Size, result.PageSize);
             Assert.Equal(expectedResult, result.Items, new FakeModelEqualityComparer<TKey>());
             Assert.Equal(
-                queryParameters?.Page.Size * queryParameters?.Page.Index + filteredEntitiesCount,
+                (queryParameters?.Page.Size * queryParameters?.Page.Index) + filteredEntitiesCount,
                 result.TotalCount
             );
         }
