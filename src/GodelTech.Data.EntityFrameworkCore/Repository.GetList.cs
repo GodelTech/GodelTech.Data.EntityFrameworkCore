@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,10 +33,13 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Asynchronously gets entities of type T from repository that satisfies a query parameters.
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns><cref>Task{IList{TModel}}</cref>.</returns>
-        public virtual async Task<IList<TEntity>> GetListAsync(QueryParameters<TEntity, TKey> queryParameters = null)
+        public virtual async Task<IList<TEntity>> GetListAsync(
+            QueryParameters<TEntity, TKey> queryParameters = null,
+            CancellationToken cancellationToken = default)
         {
-            return await Query(queryParameters).ToListAsync();
+            return await Query(queryParameters).ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -43,10 +47,13 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns><cref>Task{IList{TModel}}</cref>.</returns>
-        public virtual async Task<IList<TModel>> GetListAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
+        public virtual async Task<IList<TModel>> GetListAsync<TModel>(
+            QueryParameters<TEntity, TKey> queryParameters = null,
+            CancellationToken cancellationToken = default)
         {
-            return await Query<TModel>(queryParameters).ToListAsync();
+            return await Query<TModel>(queryParameters).ToListAsync(cancellationToken);
         }
     }
 }

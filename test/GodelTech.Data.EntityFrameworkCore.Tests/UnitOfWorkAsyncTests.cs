@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
@@ -36,21 +37,23 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public async Task CommitAsync()
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             const int expectedResult = 1;
 
             _mockDbContext
                 .Setup(
-                    x => x.SaveChangesAsync(default)
+                    x => x.SaveChangesAsync(cancellationToken)
                 )
                 .ReturnsAsync(expectedResult);
 
             // Act
-            var result = await _unitOfWork.CommitAsync();
+            var result = await _unitOfWork.CommitAsync(cancellationToken);
 
             // Assert
             _mockDbContext
                 .Verify(
-                    x => x.SaveChangesAsync(default),
+                    x => x.SaveChangesAsync(cancellationToken),
                     Times.Once
                 );
 
@@ -61,23 +64,25 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public async Task CommitAsync_WhenDbUpdateException_ThrowsDataStorageException()
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var expectedInnerException = new DbUpdateException("Test Message");
 
             _mockDbContext
                 .Setup(
-                    x => x.SaveChangesAsync(default)
+                    x => x.SaveChangesAsync(cancellationToken)
                 )
                 .Throws(expectedInnerException);
 
             // Act
             var exception = await Assert.ThrowsAsync<DataStorageException>(
-                () => _unitOfWork.CommitAsync()
+                () => _unitOfWork.CommitAsync(cancellationToken)
             );
 
             // Assert
             _mockDbContext
                 .Verify(
-                    x => x.SaveChangesAsync(default),
+                    x => x.SaveChangesAsync(cancellationToken),
                     Times.Once
                 );
 

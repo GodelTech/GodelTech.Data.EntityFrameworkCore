@@ -34,11 +34,11 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="GodelTech.Data" Version="6.1.0" />
+		<PackageReference Include="GodelTech.Data" Version="6.2.0" />
 
 		<!-- Source Link needs this -->
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />

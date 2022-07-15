@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using MockQueryable.Moq;
@@ -20,12 +21,14 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var expectedResult = queryableEntities.FirstOrDefault();
 
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.GetAsync(queryParameters);
+            var result = await repository.GetAsync(queryParameters, cancellationToken);
 
             // Assert
             Assert.NotNull(defaultKey);
@@ -43,6 +46,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var expectedResult = queryableEntities
                 .Select(
                     x => new FakeModel<TKey>
@@ -78,7 +83,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.GetAsync<FakeModel<TKey>>(queryParameters);
+            var result = await repository.GetAsync<FakeModel<TKey>>(queryParameters, cancellationToken);
 
             // Assert
             _mockDataMapper
