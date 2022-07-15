@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,15 +67,16 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <summary>
         /// Asynchronously commits all changes on the DB.
         /// </summary>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns>Number of rows affected.</returns>
         /// <exception cref="DataStorageException"></exception>
-        public virtual async Task<int> CommitAsync()
+        public virtual async Task<int> CommitAsync(CancellationToken cancellationToken = default)
         {
             int cnt;
 
             try
             {
-                cnt = await DbContext.SaveChangesAsync();
+                cnt = await DbContext.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException exception)
             {

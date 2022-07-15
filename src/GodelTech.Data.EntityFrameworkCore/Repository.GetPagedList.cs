@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,12 +53,15 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Asynchronously gets paged list of entities of type T from repository that satisfies a query parameters.
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns><cref>Task{PagedResult{TEntity}}</cref>.</returns>
-        public virtual Task<PagedResult<TEntity>> GetPagedListAsync(QueryParameters<TEntity, TKey> queryParameters)
+        public virtual Task<PagedResult<TEntity>> GetPagedListAsync(
+            QueryParameters<TEntity, TKey> queryParameters,
+            CancellationToken cancellationToken = default)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
-            return GetPagedListInternalAsync(queryParameters);
+            return GetPagedListInternalAsync(queryParameters, cancellationToken);
         }
 
         /// <summary>
@@ -65,19 +69,24 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns><cref>Task{PagedResult{TModel}}</cref>.</returns>
-        public virtual Task<PagedResult<TModel>> GetPagedListAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters)
+        public virtual Task<PagedResult<TModel>> GetPagedListAsync<TModel>(
+            QueryParameters<TEntity, TKey> queryParameters,
+            CancellationToken cancellationToken = default)
         {
             if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
 
-            return GetPagedListInternalAsync<TModel>(queryParameters);
+            return GetPagedListInternalAsync<TModel>(queryParameters, cancellationToken);
         }
 
-        private async Task<PagedResult<TEntity>> GetPagedListInternalAsync(QueryParameters<TEntity, TKey> queryParameters)
+        private async Task<PagedResult<TEntity>> GetPagedListInternalAsync(
+            QueryParameters<TEntity, TKey> queryParameters,
+            CancellationToken cancellationToken = default)
         {
-            var items = await PagedResultQuery(queryParameters).ToListAsync();
+            var items = await PagedResultQuery(queryParameters).ToListAsync(cancellationToken);
 
-            var totalCount = await CountAsync(queryParameters);
+            var totalCount = await CountAsync(queryParameters, cancellationToken);
 
             return new PagedResult<TEntity>(
                 queryParameters.Page,
@@ -86,11 +95,13 @@ namespace GodelTech.Data.EntityFrameworkCore
             );
         }
 
-        private async Task<PagedResult<TModel>> GetPagedListInternalAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters)
+        private async Task<PagedResult<TModel>> GetPagedListInternalAsync<TModel>(
+            QueryParameters<TEntity, TKey> queryParameters,
+            CancellationToken cancellationToken = default)
         {
-            var items = await PagedResultQuery<TModel>(queryParameters).ToListAsync();
+            var items = await PagedResultQuery<TModel>(queryParameters).ToListAsync(cancellationToken);
 
-            var totalCount = await CountAsync(queryParameters);
+            var totalCount = await CountAsync(queryParameters, cancellationToken);
 
             return new PagedResult<TModel>(
                 queryParameters.Page,

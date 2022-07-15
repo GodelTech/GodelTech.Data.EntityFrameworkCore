@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
 using Microsoft.EntityFrameworkCore;
@@ -16,26 +17,32 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
             FakeEntity<TKey> entity,
             Collection<FakeEntity<TKey>> expectedEntities)
         {
-            // Arrange & Act
+            // Arrange
+            var cancellationToken = new CancellationToken();
+
+            // Act
             var result = await _unitOfWork
                 .GetFakeTypeEntityRepository<TKey>()
-                .InsertAsync(entity);
+                .InsertAsync(entity, cancellationToken);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             // Assert
             Assert.NotNull(defaultKey);
 
             var dbContextEntityResult = await DbContext
                 .Set<FakeEntity<TKey>>()
-                .SingleAsync(x => x.Id.Equals(entity.Id));
+                .SingleAsync(
+                    x => x.Id.Equals(entity.Id),
+                    cancellationToken
+                );
 
             Assert.Equal(entity, result);
             Assert.Equal(dbContextEntityResult, result, new FakeEntityEqualityComparer<TKey>());
 
             var dbContextResult = await DbContext
                 .Set<FakeEntity<TKey>>()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             Assert.Equal(expectedEntities, dbContextResult, new FakeEntityEqualityComparer<TKey>());
         }
@@ -47,19 +54,22 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
             Collection<FakeEntity<TKey>> entities,
             Collection<FakeEntity<TKey>> expectedEntities)
         {
-            // Arrange & Act
+            // Arrange
+            var cancellationToken = new CancellationToken();
+
+            // Act
             await _unitOfWork
                 .GetFakeTypeEntityRepository<TKey>()
-                .InsertAsync(entities);
+                .InsertAsync(entities, cancellationToken);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             // Assert
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext
                 .Set<FakeEntity<TKey>>()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             Assert.Equal(expectedEntities, dbContextResult, new FakeEntityEqualityComparer<TKey>());
         }

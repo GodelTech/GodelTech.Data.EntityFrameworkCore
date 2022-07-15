@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,10 +39,13 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// If no entity is found, then null is returned.
         /// </summary>
         /// <param name="queryParameters">Query parameters.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns><cref>Task{TEntity}</cref>.</returns>
-        public virtual async Task<TEntity> GetAsync(QueryParameters<TEntity, TKey> queryParameters = null)
+        public virtual async Task<TEntity> GetAsync(
+            QueryParameters<TEntity, TKey> queryParameters = null,
+            CancellationToken cancellationToken = default)
         {
-            return await Query(queryParameters).FirstOrDefaultAsync();
+            return await Query(queryParameters).FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
@@ -50,10 +54,13 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// </summary>
         /// <typeparam name="TModel">The type of the T model.</typeparam>
         /// <param name="queryParameters">Query parameters.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
         /// <returns><cref>Task{TModel}</cref>.</returns>
-        public virtual async Task<TModel> GetAsync<TModel>(QueryParameters<TEntity, TKey> queryParameters = null)
+        public virtual async Task<TModel> GetAsync<TModel>(
+            QueryParameters<TEntity, TKey> queryParameters = null,
+            CancellationToken cancellationToken = default)
         {
-            return await Query<TModel>(queryParameters).FirstOrDefaultAsync();
+            return await Query<TModel>(queryParameters).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

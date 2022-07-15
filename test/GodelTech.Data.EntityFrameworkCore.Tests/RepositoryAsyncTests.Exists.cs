@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Xunit;
@@ -18,12 +19,14 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var expectedResult = queryableEntities.Any();
 
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.ExistsAsync(queryParameters);
+            var result = await repository.ExistsAsync(queryParameters, cancellationToken);
 
             // Assert
             Assert.NotNull(defaultKey);

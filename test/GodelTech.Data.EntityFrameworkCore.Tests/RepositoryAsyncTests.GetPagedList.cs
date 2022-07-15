@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using MockQueryable.Moq;
@@ -18,13 +19,15 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             TKey defaultKey)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var repository = GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
             Assert.NotNull(defaultKey);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(
-                () => repository.GetPagedListAsync(null)
+                () => repository.GetPagedListAsync(null, cancellationToken)
             );
             Assert.Equal("queryParameters", exception.ParamName);
         }
@@ -35,6 +38,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             TKey defaultKey)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var repository = GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
@@ -45,7 +50,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                     new QueryParameters<FakeEntity<TKey>, TKey>
                     {
                         Page = null
-                    }
+                    },
+                    cancellationToken
                 )
             );
             Assert.Equal("Page can't be null. (Parameter 'queryParameters')", exception.Message);
@@ -58,6 +64,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             TKey defaultKey)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var repository = GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
@@ -72,7 +80,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                             Index = -1,
                             Size = -1
                         }
-                    }
+                    },
+                    cancellationToken
                 )
             );
             Assert.Equal("Page is not valid. (Parameter 'queryParameters')", exception.Message);
@@ -89,12 +98,14 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var expectedResult = queryableEntities.ToList();
 
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.GetPagedListAsync(queryParameters);
+            var result = await repository.GetPagedListAsync(queryParameters, cancellationToken);
 
             // Assert
             Assert.NotNull(defaultKey);
@@ -114,13 +125,15 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             TKey defaultKey)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var repository = GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
             Assert.NotNull(defaultKey);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(
-                () => repository.GetPagedListAsync<FakeModel<TKey>>(null)
+                () => repository.GetPagedListAsync<FakeModel<TKey>>(null, cancellationToken)
             );
             Assert.Equal("queryParameters", exception.ParamName);
         }
@@ -131,6 +144,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             TKey defaultKey)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var repository = GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
@@ -141,7 +156,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                     new QueryParameters<FakeEntity<TKey>, TKey>
                     {
                         Page = null
-                    }
+                    },
+                    cancellationToken
                 )
             );
             Assert.Equal("Page can't be null. (Parameter 'queryParameters')", exception.Message);
@@ -154,6 +170,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             TKey defaultKey)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var repository = GetRepository<FakeEntity<TKey>, TKey>(new List<FakeEntity<TKey>>());
 
             // Act & Assert
@@ -168,7 +186,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                             Index = -1,
                             Size = -1
                         }
-                    }
+                    },
+                    cancellationToken
                 )
             );
             Assert.Equal("Page is not valid. (Parameter 'queryParameters')", exception.Message);
@@ -185,6 +204,8 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             int filteredEntitiesCount)
         {
             // Arrange
+            var cancellationToken = new CancellationToken();
+
             var expectedResult = queryableEntities
                 .Select(
                     x => new FakeModel<TKey>
@@ -220,7 +241,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             var repository = GetRepository<FakeEntity<TKey>, TKey>(entities);
 
             // Act
-            var result = await repository.GetPagedListAsync<FakeModel<TKey>>(queryParameters);
+            var result = await repository.GetPagedListAsync<FakeModel<TKey>>(queryParameters, cancellationToken);
 
             // Assert
             _mockDataMapper
