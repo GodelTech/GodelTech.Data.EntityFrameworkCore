@@ -116,7 +116,21 @@ namespace GodelTech.Data.EntityFrameworkCore
         protected virtual IRepository<TEntity, TKey> GetRepository<TEntity, TKey>()
             where TEntity : class, IEntity<TKey>
         {
-            return (IRepository<TEntity, TKey>) _repositories[typeof(TEntity)];
+            return GetRepository<IRepository<TEntity, TKey>, TEntity, TKey>();
+        }
+
+        /// <summary>
+        /// Gets the repository for specified entity type.
+        /// </summary>
+        /// <typeparam name="TRepository">The type of the T repository.</typeparam>
+        /// <typeparam name="TEntity">The type of the T entity.</typeparam>
+        /// <typeparam name="TKey">The type of the T key.</typeparam>
+        /// <returns>TRepository.</returns>
+        protected virtual TRepository GetRepository<TRepository, TEntity, TKey>()
+            where TRepository : IRepository<TEntity, TKey>
+            where TEntity : class, IEntity<TKey>
+        {
+            return (TRepository) _repositories[typeof(TEntity)];
         }
 
         #region Dispose
