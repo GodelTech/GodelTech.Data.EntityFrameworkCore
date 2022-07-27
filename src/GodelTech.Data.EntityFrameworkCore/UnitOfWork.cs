@@ -14,7 +14,7 @@ namespace GodelTech.Data.EntityFrameworkCore
     public abstract class UnitOfWork<TDbContext> : IUnitOfWork
         where TDbContext : DbContext
     {
-        private readonly IDictionary<Type, object> _repositories;
+        private readonly IDictionary<Type, object> _repositories = new Dictionary<Type, object>();
         private bool _isDisposed;
 
         /// <summary>
@@ -25,7 +25,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         {
             if (dbContextFactory == null) throw new ArgumentNullException(nameof(dbContextFactory));
 
-            _repositories = new Dictionary<Type, object>();
             DbContext = dbContextFactory.CreateDbContext();
         }
 
