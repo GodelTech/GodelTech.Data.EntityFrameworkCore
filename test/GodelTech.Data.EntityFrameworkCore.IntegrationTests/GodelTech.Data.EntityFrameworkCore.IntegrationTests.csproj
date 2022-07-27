@@ -1,61 +1,62 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
 
-		<IsPackable>false</IsPackable>
+    <IsPackable>false</IsPackable>
 
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
-		<!-- SonarQube needs this -->
-		<ProjectGuid>{00000000-0000-0000-0000-000000000021}</ProjectGuid>
-	</PropertyGroup>
+    <!-- SonarQube needs this -->
+    <ProjectGuid>{00000000-0000-0000-0000-000000000021}</ProjectGuid>
+  </PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.17" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.17" />
-	</ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.17" />
+  </ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.7" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.7" />
-	</ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.7" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="11.0.1" />
-		<PackageReference Include="coverlet.collector" Version="3.1.2">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\src\GodelTech.Data.EntityFrameworkCore\GodelTech.Data.EntityFrameworkCore.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GodelTech.Data.EntityFrameworkCore\GodelTech.Data.EntityFrameworkCore.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="RepositoryTests.*.cs">
-			<DependentUpon>RepositoryTests.cs</DependentUpon>
-		</Compile>
+  <ItemGroup>
+    <Compile Update="RepositoryTests.*.cs">
+      <DependentUpon>RepositoryTests.cs</DependentUpon>
+    </Compile>
 
-		<Compile Update="RepositoryAsyncTests.*.cs">
-			<DependentUpon>RepositoryAsyncTests.cs</DependentUpon>
-		</Compile>
-	</ItemGroup>
+    <Compile Update="RepositoryAsyncTests.*.cs">
+      <DependentUpon>RepositoryAsyncTests.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Compile Update="RepositoryTests - Copy.Insert.cs">
-	    <DependentUpon>RepositoryTests.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="RepositoryTests - Copy.Update.cs">
-	    <DependentUpon>RepositoryTests.cs</DependentUpon>
-	  </Compile>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Update="$(ProjectDir)\Simple\SimpleRepositoryTests.*.cs">
+      <DependentUpon>$(ProjectDir)\Simple\SimpleRepositoryTests.cs</DependentUpon>
+    </Compile>
+
+    <Compile Update="$(ProjectDir)\Simple\SimpleRepositoryAsyncTests.*.cs">
+      <DependentUpon>$(ProjectDir)\Simple\SimpleRepositoryAsyncTests.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
 </Project>
