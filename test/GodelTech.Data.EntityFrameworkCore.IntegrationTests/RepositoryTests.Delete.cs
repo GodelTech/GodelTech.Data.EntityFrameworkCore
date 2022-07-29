@@ -12,6 +12,32 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
         public static IEnumerable<object[]> DeleteMemberData =>
             new Collection<object[]>
             {
+                // no item
+                new object[]
+                {
+                    default(Guid),
+                    new FakeEntity<Guid>
+                    {
+                        Id = new Guid("00000000-0000-0000-0000-000000000000"),
+                        Name = "Test Name"
+                    },
+                    new Collection<FakeEntity<Guid>>
+                    {
+                        new FakeEntity<Guid>
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Test Name"
+                        }
+                    },
+                    new Collection<FakeEntity<Guid>>
+                    {
+                        new FakeEntity<Guid>
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Test Name"
+                        }
+                    }
+                },
                 // Guid
                 new object[]
                 {
@@ -232,6 +258,35 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
         public static IEnumerable<object[]> DeleteListMemberData =>
             new Collection<object[]>
             {
+                // no item
+                new object[]
+                {
+                    default(Guid),
+                    new Collection<FakeEntity<Guid>>
+                    {
+                        new FakeEntity<Guid>
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Name = "Test Name"
+                        }
+                    },
+                    new Collection<FakeEntity<Guid>>
+                    {
+                        new FakeEntity<Guid>
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Test Name"
+                        }
+                    },
+                    new Collection<FakeEntity<Guid>>
+                    {
+                        new FakeEntity<Guid>
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Test Name"
+                        }
+                    }
+                },
                 // Guid
                 new object[]
                 {

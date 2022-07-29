@@ -59,4 +59,14 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="$(ProjectDir)\Simple\Extensions\SimpleRepositoryExtensionsTests.*.cs">
+      <DependentUpon>SimpleRepositoryExtensionsTests.cs</DependentUpon>
+    </Compile>
+
+    <Compile Update="$(ProjectDir)\Simple\Extensions\SimpleRepositoryExtensionsAsyncTests.*.cs">
+      <DependentUpon>SimpleRepositoryExtensionsAsyncTests.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
