@@ -52,13 +52,13 @@
 
   <ItemGroup>
     <Compile Update="$(ProjectDir)\Simple\SimpleRepository.*.cs">
-      <DependentUpon>$(ProjectDir)\Simple\SimpleRepository.cs</DependentUpon>
+      <DependentUpon>SimpleRepository.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="$(ProjectDir)\Simple\Extensions\SimpleRepositoryExtensions.*.cs">
-      <DependentUpon>$(ProjectDir)\Simple\Extensions\SimpleRepositoryExtensions.cs</DependentUpon>
+      <DependentUpon>SimpleRepositoryExtensions.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 
