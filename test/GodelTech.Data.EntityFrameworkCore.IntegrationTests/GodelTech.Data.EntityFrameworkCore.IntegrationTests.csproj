@@ -51,11 +51,11 @@
 
   <ItemGroup>
     <Compile Update="$(ProjectDir)\Simple\SimpleRepositoryTests.*.cs">
-      <DependentUpon>$(ProjectDir)\Simple\SimpleRepositoryTests.cs</DependentUpon>
+      <DependentUpon>SimpleRepositoryTests.cs</DependentUpon>
     </Compile>
 
     <Compile Update="$(ProjectDir)\Simple\SimpleRepositoryAsyncTests.*.cs">
-      <DependentUpon>$(ProjectDir)\Simple\SimpleRepositoryAsyncTests.cs</DependentUpon>
+      <DependentUpon>SimpleRepositoryAsyncTests.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 
