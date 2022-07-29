@@ -42,7 +42,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         /// <param name="repository">The repository.</param>
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
-        public static async Task DeleteAsync<TEntity, TKey>(
+        public static Task DeleteAsync<TEntity, TKey>(
             this ISimpleRepository<TEntity, TKey> repository,
             TKey id,
             CancellationToken cancellationToken = default)
@@ -50,11 +50,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
 
-            var entity = await repository.GetAsync(id, cancellationToken);
-
-            if (entity == null) return;
-
-            await repository.DeleteAsync(entity, cancellationToken);
+            return repository.DeleteInternalAsync(id, cancellationToken);
         }
 
         /// <summary>
@@ -65,7 +61,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         /// <param name="repository">The repository.</param>
         /// <param name="ids">List of entities ids.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
-        public static async Task DeleteAsync<TEntity, TKey>(
+        public static Task DeleteAsync<TEntity, TKey>(
             this ISimpleRepository<TEntity, TKey> repository,
             IEnumerable<TKey> ids,
             CancellationToken cancellationToken = default)
@@ -73,6 +69,28 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
 
+            return repository.DeleteInternalAsync(ids, cancellationToken);
+        }
+
+        private static async Task DeleteInternalAsync<TEntity, TKey>(
+            this ISimpleRepository<TEntity, TKey> repository,
+            TKey id,
+            CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity<TKey>
+        {
+            var entity = await repository.GetAsync(id, cancellationToken);
+
+            if (entity == null) return;
+
+            await repository.DeleteAsync(entity, cancellationToken);
+        }
+
+        private static async Task DeleteInternalAsync<TEntity, TKey>(
+            this ISimpleRepository<TEntity, TKey> repository,
+            IEnumerable<TKey> ids,
+            CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity<TKey>
+        {
             var entities = await repository.GetListAsync(x => ids.Contains(x.Id), cancellationToken);
 
             if (!entities.Any()) return;
