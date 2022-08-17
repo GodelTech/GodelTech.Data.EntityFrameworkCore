@@ -23,7 +23,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
 
             // database
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<FakeDbContext>()
-                .UseInMemoryDatabase($"{nameof(RepositoryTests)}{Guid.NewGuid():N}");
+                .UseInMemoryDatabase($"{nameof(RepositoryAsyncTests)}{Guid.NewGuid():N}");
 
             var dbContextFactory = new FakeDbContextFactory(dbContextOptionsBuilder.Options);
 
