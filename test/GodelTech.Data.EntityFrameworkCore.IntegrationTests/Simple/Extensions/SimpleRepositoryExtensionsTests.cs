@@ -25,7 +25,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple.Extensions
 
             // database
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<FakeDbContext>()
-                .UseInMemoryDatabase($"{nameof(SimpleRepositoryExtensionsAsyncTests)}{Guid.NewGuid():N}");
+                .UseInMemoryDatabase($"{nameof(SimpleRepositoryExtensionsTests)}{Guid.NewGuid():N}");
 
             DbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
 
