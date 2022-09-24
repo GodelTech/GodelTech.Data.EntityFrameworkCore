@@ -11,7 +11,7 @@ namespace GodelTech.Data.EntityFrameworkCore
     /// UnitOfWork for data layer.
     /// </summary>
     /// <seealso cref="IUnitOfWork" />
-    public abstract class UnitOfWork<TDbContext> : IUnitOfWork
+    public abstract class UnitOfWork<TDbContext> : IUnitOfWork, IChangeTracker
         where TDbContext : DbContext
     {
         private readonly IDictionary<Type, object> _repositories = new Dictionary<Type, object>();
@@ -83,6 +83,14 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
 
             return cnt;
+        }
+
+        /// <summary>
+        /// Stops tracking all currently tracked entities.
+        /// </summary>
+        public void ClearChangeTracker()
+        {
+            DbContext.ChangeTracker.Clear();
         }
 
         /// <summary>
