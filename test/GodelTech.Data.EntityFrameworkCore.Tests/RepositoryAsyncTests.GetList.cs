@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using MockQueryable.Moq;
 using Moq;
@@ -33,7 +34,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Assert
             Assert.NotNull(defaultKey);
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
-            Assert.Equal(expectedResult, result, new FakeEntityEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Theory]
@@ -100,7 +101,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             Assert.NotNull(defaultKey);
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
-            Assert.Equal(expectedResult, result, new FakeModelEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(expectedResult);
         }
     }
 }
