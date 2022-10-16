@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
@@ -43,8 +44,10 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             DbContextBase item,
             string expectedSchemaName)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
             // Arrange & Act & Assert
-            Assert.Equal(expectedSchemaName, item?.SchemaName);
+            Assert.Equal(expectedSchemaName, item.SchemaName);
         }
     }
 }

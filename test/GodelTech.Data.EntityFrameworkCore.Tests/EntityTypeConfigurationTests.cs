@@ -80,8 +80,10 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             string expectedSchemaName)
             where TEntity : class, IEntity<TKey>
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
             // Arrange & Act & Assert
-            Assert.Equal(expectedSchemaName, item?.SchemaName);
+            Assert.Equal(expectedSchemaName, item.SchemaName);
         }
     }
 }

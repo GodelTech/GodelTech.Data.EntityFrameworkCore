@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Moq;
 using Xunit;
@@ -99,7 +100,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
             Assert.Equal(queryParameters?.Page.Index, result.PageIndex);
             Assert.Equal(queryParameters?.Page.Size, result.PageSize);
-            Assert.Equal(expectedResult, result.Items, new FakeEntityEqualityComparer<TKey>());
+            result.Items.Should().BeEquivalentTo(expectedResult);
             Assert.Equal(
                 (queryParameters?.Page.Size * queryParameters?.Page.Index) + filteredEntitiesCount,
                 result.TotalCount
@@ -236,7 +237,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
             Assert.Equal(queryParameters?.Page.Index, result.PageIndex);
             Assert.Equal(queryParameters?.Page.Size, result.PageSize);
-            Assert.Equal(expectedResult, result.Items, new FakeModelEqualityComparer<TKey>());
+            result.Items.Should().BeEquivalentTo(expectedResult);
             Assert.Equal(
                 (queryParameters?.Page.Size * queryParameters?.Page.Index) + filteredEntitiesCount,
                 result.TotalCount

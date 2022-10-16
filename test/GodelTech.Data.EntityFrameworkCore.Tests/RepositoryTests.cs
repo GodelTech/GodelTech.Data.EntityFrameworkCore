@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -768,7 +769,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Assert
             Assert.NotNull(defaultKey);
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
-            Assert.Equal(expectedResult, result, new FakeEntityEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Theory]
@@ -832,7 +833,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             Assert.NotNull(defaultKey);
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
-            Assert.Equal(expectedResult, result, new FakeModelEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Theory]
@@ -922,7 +923,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             // Assert
             Assert.NotNull(defaultKey);
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
-            Assert.Equal(expectedResult, result, new FakeEntityEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Theory]
@@ -1053,7 +1054,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
             Assert.NotNull(defaultKey);
             Assert.Equal(filteredEntitiesCount, queryableEntities.ToList().Count);
-            Assert.Equal(expectedResult, result, new FakeModelEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Theory]

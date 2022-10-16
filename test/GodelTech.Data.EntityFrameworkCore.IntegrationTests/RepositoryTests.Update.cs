@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -232,13 +233,13 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
                 .Single(x => x.Id.Equals(entity.Id));
 
             Assert.Equal(entity, result);
-            Assert.Equal(dbContextEntityResult, result, new FakeEntityEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(dbContextEntityResult);
 
             var dbContextResult = DbContext
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            Assert.Equal(expectedEntities, dbContextResult, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         [Theory]
@@ -275,13 +276,13 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
                 .Single(x => x.Id.Equals(entity.Id));
 
             Assert.Equal(entity, result);
-            Assert.Equal(dbContextEntityResult, result, new FakeEntityEqualityComparer<TKey>());
+            result.Should().BeEquivalentTo(dbContextEntityResult);
 
             var dbContextResult = DbContext
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            Assert.Equal(expectedEntities, dbContextResult, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
     }
 }

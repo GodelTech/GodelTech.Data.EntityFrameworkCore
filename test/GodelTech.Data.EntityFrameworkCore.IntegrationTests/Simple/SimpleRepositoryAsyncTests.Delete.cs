@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -39,7 +40,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
                 .Set<FakeEntity<TKey>>()
                 .ToListAsync(cancellationToken);
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         [Theory]
@@ -74,7 +75,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
                 .Set<FakeEntity<TKey>>()
                 .ToListAsync(cancellationToken);
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         [Theory]
@@ -107,7 +108,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
                 .Set<FakeEntity<TKey>>()
                 .ToListAsync(cancellationToken);
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         [Theory]
@@ -142,7 +143,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
                 .Set<FakeEntity<TKey>>()
                 .ToListAsync(cancellationToken);
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
     }
 }
