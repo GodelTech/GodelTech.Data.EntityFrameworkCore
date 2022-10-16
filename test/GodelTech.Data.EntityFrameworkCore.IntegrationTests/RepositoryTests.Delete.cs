@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
 using Xunit;
 
@@ -217,7 +218,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         [Theory]
@@ -252,7 +253,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         public static IEnumerable<object[]> DeleteListMemberData =>
@@ -484,7 +485,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
 
         [Theory]
@@ -519,7 +520,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            Assert.Equal(dbContextResult, expectedEntities, new FakeEntityEqualityComparer<TKey>());
+            dbContextResult.Should().BeEquivalentTo(expectedEntities);
         }
     }
 }
