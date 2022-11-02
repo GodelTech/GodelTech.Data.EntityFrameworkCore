@@ -75,7 +75,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         private static async Task DeleteInternalAsync<TEntity, TKey>(
             this ISimpleRepository<TEntity, TKey> repository,
             TKey id,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
             where TEntity : class, IEntity<TKey>
         {
             var entity = await repository.GetAsync(id, cancellationToken);
@@ -88,7 +88,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         private static async Task DeleteInternalAsync<TEntity, TKey>(
             this ISimpleRepository<TEntity, TKey> repository,
             IEnumerable<TKey> ids,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
             where TEntity : class, IEntity<TKey>
         {
             var entities = await repository.GetListAsync(x => ids.Contains(x.Id), cancellationToken);

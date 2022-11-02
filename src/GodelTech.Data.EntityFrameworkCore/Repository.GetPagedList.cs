@@ -82,7 +82,7 @@ namespace GodelTech.Data.EntityFrameworkCore
 
         private async Task<PagedResult<TEntity>> GetPagedListInternalAsync(
             QueryParameters<TEntity, TKey> queryParameters,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             var items = await PagedResultQuery(queryParameters).ToListAsync(cancellationToken);
 
@@ -97,7 +97,7 @@ namespace GodelTech.Data.EntityFrameworkCore
 
         private async Task<PagedResult<TModel>> GetPagedListInternalAsync<TModel>(
             QueryParameters<TEntity, TKey> queryParameters,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             var items = await PagedResultQuery<TModel>(queryParameters).ToListAsync(cancellationToken);
 
