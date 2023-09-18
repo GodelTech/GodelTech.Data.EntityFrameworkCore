@@ -32,7 +32,7 @@ namespace GodelTech.Data.EntityFrameworkCore
 
         private void Delete(IList<TEntity> entities)
         {
-            foreach (var entity in entities.Where(x => IsDetached(x)))
+            foreach (var entity in entities.Where(IsDetached))
             {
                 DbSet.Attach(entity);
             }
