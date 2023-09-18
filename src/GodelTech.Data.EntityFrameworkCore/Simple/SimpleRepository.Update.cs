@@ -20,8 +20,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         {
             var result = await base.UpdateAsync(entity, startTrackProperties, cancellationToken);
 
-            await DbContext.SaveChangesAsync(cancellationToken);
-
             return result;
         }
     }

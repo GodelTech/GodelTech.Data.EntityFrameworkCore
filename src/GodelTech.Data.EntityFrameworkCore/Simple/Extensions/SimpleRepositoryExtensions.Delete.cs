@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,15 +42,17 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         /// <param name="repository">The repository.</param>
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
-        public static Task DeleteAsync<TEntity, TKey>(
-            this ISimpleRepository<TEntity, TKey> repository,
+        public static async Task DeleteAsync<TEntity, TKey>(
+            [NotNull] this ISimpleRepository<TEntity, TKey> repository,
             TKey id,
             CancellationToken cancellationToken = default)
             where TEntity : class, IEntity<TKey>
         {
-            if (repository == null) throw new ArgumentNullException(nameof(repository));
+            var entity = await repository.GetAsync(id, cancellationToken);
 
-            return repository.DeleteInternalAsync(id, cancellationToken);
+            if (entity == null) return;
+
+            await repository.DeleteAsync(entity, cancellationToken);
         }
 
         /// <summary>
@@ -61,34 +63,10 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         /// <param name="repository">The repository.</param>
         /// <param name="ids">List of entities ids.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
-        public static Task DeleteAsync<TEntity, TKey>(
-            this ISimpleRepository<TEntity, TKey> repository,
+        public static async Task DeleteAsync<TEntity, TKey>(
+            [NotNull] this ISimpleRepository<TEntity, TKey> repository,
             IEnumerable<TKey> ids,
             CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity<TKey>
-        {
-            if (repository == null) throw new ArgumentNullException(nameof(repository));
-
-            return repository.DeleteInternalAsync(ids, cancellationToken);
-        }
-
-        private static async Task DeleteInternalAsync<TEntity, TKey>(
-            this ISimpleRepository<TEntity, TKey> repository,
-            TKey id,
-            CancellationToken cancellationToken)
-            where TEntity : class, IEntity<TKey>
-        {
-            var entity = await repository.GetAsync(id, cancellationToken);
-
-            if (entity == null) return;
-
-            await repository.DeleteAsync(entity, cancellationToken);
-        }
-
-        private static async Task DeleteInternalAsync<TEntity, TKey>(
-            this ISimpleRepository<TEntity, TKey> repository,
-            IEnumerable<TKey> ids,
-            CancellationToken cancellationToken)
             where TEntity : class, IEntity<TKey>
         {
             var entities = await repository.GetListAsync(x => ids.Contains(x.Id), cancellationToken);

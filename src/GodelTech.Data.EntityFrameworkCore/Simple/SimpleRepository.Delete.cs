@@ -26,16 +26,12 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         public override async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             await base.DeleteAsync(entity, cancellationToken);
-
-            await DbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc />
         public override async Task DeleteAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             await base.DeleteAsync(entities, cancellationToken);
-
-            await DbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }
