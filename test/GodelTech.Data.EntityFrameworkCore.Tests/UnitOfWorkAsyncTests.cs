@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Moq;
 using Xunit;
 
@@ -21,9 +20,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             _mockDbContext
                 .Setup(x => x.Dispose());
 
-            var mockDbContextFactory = new Mock<IDesignTimeDbContextFactory<DbContext>>(MockBehavior.Strict);
+            var mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
             mockDbContextFactory
-                .Setup(x => x.CreateDbContext(Array.Empty<string>()))
+                .Setup(x => x.CreateDbContext())
                 .Returns(_mockDbContext.Object);
 
             _unitOfWork = new FakeUnitOfWork(mockDbContextFactory.Object);

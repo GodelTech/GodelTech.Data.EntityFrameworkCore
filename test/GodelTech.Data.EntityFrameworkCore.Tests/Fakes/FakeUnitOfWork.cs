@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace GodelTech.Data.EntityFrameworkCore.Tests.Fakes
 {
     public class FakeUnitOfWork : UnitOfWork<DbContext>
     {
-        public FakeUnitOfWork(IDesignTimeDbContextFactory<DbContext> dbContextFactory)
+        public FakeUnitOfWork(IDbContextFactory<DbContext> dbContextFactory)
             : base(dbContextFactory)
         {
 

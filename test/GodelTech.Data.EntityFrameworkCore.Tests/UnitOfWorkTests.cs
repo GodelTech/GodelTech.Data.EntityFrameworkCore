@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Moq;
 using Xunit;
 
@@ -13,7 +12,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
     {
         private readonly Mock<DbContext> _mockDbContext;
 
-        private readonly Mock<IDesignTimeDbContextFactory<DbContext>> _mockDbContextFactory;
+        private readonly Mock<IDbContextFactory<DbContext>> _mockDbContextFactory;
 
         private readonly UnitOfWork<DbContext> _unitOfWork;
 
@@ -23,9 +22,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
             _mockDbContext
                 .Setup(x => x.Dispose());
 
-            _mockDbContextFactory = new Mock<IDesignTimeDbContextFactory<DbContext>>(MockBehavior.Strict);
+            _mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
             _mockDbContextFactory
-                .Setup(x => x.CreateDbContext(Array.Empty<string>()))
+                .Setup(x => x.CreateDbContext())
                 .Returns(_mockDbContext.Object);
 
             _unitOfWork = new FakeUnitOfWork(_mockDbContextFactory.Object);
@@ -210,9 +209,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public void Dispose_WhenDbContextIsNull()
         {
             // Arrange
-            var mockDbContextFactory = new Mock<IDesignTimeDbContextFactory<DbContext>>(MockBehavior.Strict);
+            var mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
             mockDbContextFactory
-                .Setup(x => x.CreateDbContext(Array.Empty<string>()))
+                .Setup(x => x.CreateDbContext())
                 .Returns(() => null);
 
             using var fakeUnitOfWork = new FakeUnitOfWork(mockDbContextFactory.Object);
