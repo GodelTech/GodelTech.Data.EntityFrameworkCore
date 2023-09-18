@@ -29,14 +29,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         }
 
         /// <summary>
-        /// Destructor
-        /// </summary>
-        ~UnitOfWork()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
         /// Gets the database context.
         /// </summary>
         /// <value>The database context.</value>
