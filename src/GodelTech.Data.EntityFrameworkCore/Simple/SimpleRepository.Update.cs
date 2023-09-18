@@ -16,9 +16,9 @@ namespace GodelTech.Data.EntityFrameworkCore.Simple
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> UpdateAsync(TEntity entity, bool startTrackProperties = false, CancellationToken cancellationToken = default)
+        public override async Task<TEntity> UpdateAsync(TEntity entity, bool startTrackProperties = false, CancellationToken cancellationToken = default)
         {
-            var result = base.Update(entity, startTrackProperties);
+            var result = await base.UpdateAsync(entity, startTrackProperties, cancellationToken);
 
             await DbContext.SaveChangesAsync(cancellationToken);
 

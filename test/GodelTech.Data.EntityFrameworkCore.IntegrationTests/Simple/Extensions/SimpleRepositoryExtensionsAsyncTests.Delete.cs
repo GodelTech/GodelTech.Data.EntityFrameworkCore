@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes;
-using GodelTech.Data.EntityFrameworkCore.Simple;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

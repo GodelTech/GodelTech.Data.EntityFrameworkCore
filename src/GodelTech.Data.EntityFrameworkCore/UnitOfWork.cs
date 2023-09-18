@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 [assembly: CLSCompliant(false)]
 namespace GodelTech.Data.EntityFrameworkCore
@@ -21,11 +22,11 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// Initializes a new instance of the <see cref="UnitOfWork{TDbContext}"/> class.
         /// </summary>
         /// <param name="dbContextFactory">The database context factory.</param>
-        protected UnitOfWork(IDbContextFactory<TDbContext> dbContextFactory)
+        protected UnitOfWork(IDesignTimeDbContextFactory<TDbContext> dbContextFactory)
         {
             if (dbContextFactory == null) throw new ArgumentNullException(nameof(dbContextFactory));
 
-            DbContext = dbContextFactory.CreateDbContext();
+            DbContext = dbContextFactory.CreateDbContext(Array.Empty<string>());
         }
 
         /// <summary>

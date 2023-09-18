@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
 {
@@ -9,7 +10,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
             Func<DbContext, Repository<FakeEntity<Guid>, Guid>> fakeGuidEntityRepository,
             Func<DbContext, Repository<FakeEntity<int>, int>> fakeIntEntityRepository,
             Func<DbContext, Repository<FakeEntity<string>, string>> fakeStringEntityRepository,
-            IDbContextFactory<FakeDbContext> dbContextFactory)
+            IDesignTimeDbContextFactory<FakeDbContext> dbContextFactory)
             : base(dbContextFactory)
         {
             if (fakeGuidEntityRepository == null) throw new ArgumentNullException(nameof(fakeGuidEntityRepository));

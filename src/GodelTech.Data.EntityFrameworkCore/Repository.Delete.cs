@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
@@ -36,6 +38,22 @@ namespace GodelTech.Data.EntityFrameworkCore
             }
 
             DbSet.RemoveRange(entities);
+        }
+
+        /// <inheritdoc />
+        public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        {
+            Delete(entity);
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public virtual Task DeleteAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        {
+            Delete(entities);
+
+            return Task.CompletedTask;
         }
     }
 }

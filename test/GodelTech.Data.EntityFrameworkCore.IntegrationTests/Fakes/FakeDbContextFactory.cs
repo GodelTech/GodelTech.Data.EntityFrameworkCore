@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
 {
-    public class FakeDbContextFactory : IDbContextFactory<FakeDbContext>
+    public class FakeDbContextFactory : IDesignTimeDbContextFactory<FakeDbContext>
     {
         private readonly DbContextOptions _dbContextOptions;
 
@@ -11,7 +12,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
             _dbContextOptions = dbContextOptions;
         }
 
-        public FakeDbContext CreateDbContext()
+        public FakeDbContext CreateDbContext(string[] args)
         {
             return new FakeDbContext(_dbContextOptions, "dbo");
         }
