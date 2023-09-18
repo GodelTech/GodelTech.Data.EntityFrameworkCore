@@ -25,10 +25,11 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests
             var dataMapper = new FakeDataMapper(autoMapper);
 
             // database
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<FakeDbContext>()
-                .UseInMemoryDatabase($"{nameof(UnitOfWorkTests)}{Guid.NewGuid():N}");
+            var dbContextOptions = new DbContextOptionsBuilder<FakeDbContext>()
+                .UseSqlite("DataSource=:memory:")
+                .Options;
 
-            var dbContextFactory = new FakeDbContextFactory(dbContextOptionsBuilder.Options);
+            var dbContextFactory = new FakeDbContextFactory(dbContextOptions);
 
             _unitOfWork = new FakeUnitOfWork(
                 dbContext => new Repository<FakeEntity<Guid>, Guid>(dbContext, dataMapper),
