@@ -48,10 +48,4 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Simple\Extensions\SimpleRepositoryExtensionsAsyncTests.*.cs">
-      <DependentUpon>SimpleRepositoryExtensionsAsyncTests.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
 </Project>
