@@ -34,6 +34,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             await repository.DeleteAsync(entity, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext
@@ -69,6 +71,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             await repository.DeleteAsync(entity, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext
@@ -102,6 +106,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             await repository.DeleteAsync(entities, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext
@@ -137,6 +143,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             await repository.DeleteAsync(entities, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext

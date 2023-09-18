@@ -30,6 +30,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var result = repository.Update(entity);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextEntityResult = DbContext
@@ -68,20 +70,20 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var result = repository.Update(entity, true);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
-            var dbContextEntityResult = DbContext
-                .Set<FakeEntity<TKey>>()
-                .Single(x => x.Id.Equals(entity.Id));
-
             Assert.Equal(entity, result);
-            result.Should().BeEquivalentTo(dbContextEntityResult);
+            result.Should().BeEquivalentTo(
+                expectedEntities.Single(x => x.Id.Equals(entity.Id))
+            );
 
             var dbContextResult = DbContext
                 .Set<FakeEntity<TKey>>()
                 .ToList();
 
-            dbContextResult.Should().BeEquivalentTo(expectedEntities);
+            dbContextResult.Should().BeEquivalentTo(existingEntities);
         }
     }
 }

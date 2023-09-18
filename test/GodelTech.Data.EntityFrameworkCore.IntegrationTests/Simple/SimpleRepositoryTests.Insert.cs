@@ -22,6 +22,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var result = repository.Insert(entity);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextEntityResult = DbContext
@@ -52,6 +54,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             repository.Insert(entities);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = DbContext

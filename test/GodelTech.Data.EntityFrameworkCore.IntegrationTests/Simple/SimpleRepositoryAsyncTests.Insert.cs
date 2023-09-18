@@ -26,6 +26,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var result = await repository.InsertAsync(entity, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextEntityResult = await DbContext
@@ -61,6 +63,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             await repository.InsertAsync(entities, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext

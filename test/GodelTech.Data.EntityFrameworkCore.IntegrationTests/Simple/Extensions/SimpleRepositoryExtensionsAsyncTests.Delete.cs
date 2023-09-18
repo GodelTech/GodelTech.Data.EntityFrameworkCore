@@ -38,6 +38,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple.Extensions
             await repository.DeleteAsync(entity.Id, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext
@@ -71,6 +73,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple.Extensions
             await repository.DeleteAsync(entities.Select(x => x.Id), cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = await DbContext
