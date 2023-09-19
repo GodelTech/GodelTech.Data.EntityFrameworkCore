@@ -35,6 +35,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var result = await repository.UpdateAsync(entity, cancellationToken: cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextEntityResult = DbContext
@@ -75,20 +77,20 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var result = await repository.UpdateAsync(entity, true, cancellationToken);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
-            var dbContextEntityResult = await DbContext
-                .Set<FakeEntity<TKey>>()
-                .SingleAsync(x => x.Id.Equals(entity.Id), cancellationToken);
-
             Assert.Equal(entity, result);
-            result.Should().BeEquivalentTo(dbContextEntityResult);
+            result.Should().BeEquivalentTo(
+                expectedEntities.Single(x => x.Id.Equals(entity.Id))
+            );
 
             var dbContextResult = await DbContext
                 .Set<FakeEntity<TKey>>()
                 .ToListAsync(cancellationToken);
 
-            dbContextResult.Should().BeEquivalentTo(expectedEntities);
+            dbContextResult.Should().BeEquivalentTo(existingEntities);
         }
     }
 }

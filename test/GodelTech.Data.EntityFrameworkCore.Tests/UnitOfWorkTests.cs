@@ -14,7 +14,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
 
         private readonly Mock<IDbContextFactory<DbContext>> _mockDbContextFactory;
 
-        private readonly UnitOfWork<DbContext> _unitOfWork;
+        private readonly FakeUnitOfWork _unitOfWork;
 
         public UnitOfWorkTests()
         {
@@ -43,34 +43,6 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                 () => new FakeUnitOfWork(null)
             );
             Assert.Equal("dbContextFactory", exception.ParamName);
-        }
-
-        // https://blog.ingeniumsoftware.dev/unit-testing-finalizers-in-csharp/
-        [Fact]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
-        public void Finalizer_DisposeWithFalse()
-        {
-            // Arrange
-            WeakReference<FakeUnitOfWork> weak = null;
-            void dispose()
-            {
-                // This will go out of scope after dispose() is executed
-                var unitOfWork = new FakeUnitOfWork(_mockDbContextFactory.Object);
-
-                weak = new WeakReference<FakeUnitOfWork>(unitOfWork, true);
-            }
-
-            // Act
-            dispose();
-            GC.Collect(0, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers();
-
-            // Assert
-            _mockDbContext
-                .Verify(
-                    x => x.Dispose(),
-                    Times.Never
-                );
         }
 
         [Fact]
@@ -158,11 +130,10 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                 mockDataMapper.Object
             );
 
-            var fakeUnitOfWork = (FakeUnitOfWork) _unitOfWork;
+            _unitOfWork.ExposedRegisterRepository(repository);
 
             // Act
-            fakeUnitOfWork.ExposedRegisterRepository(repository);
-            var result = fakeUnitOfWork.ExposedGetRepository<IEntity<TKey>, TKey>();
+            var result = _unitOfWork.ExposedGetRepository<IEntity<TKey>, TKey>();
 
             // Assert
             Assert.NotNull(defaultKey);
@@ -170,32 +141,66 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         }
 
         [Fact]
-        public void Dispose_WithFalse()
+        public void Dispose_Success()
         {
             // Arrange
-            var fakeUnitOfWork = (FakeUnitOfWork) _unitOfWork;
+            var disposing = false;
+            var disposeCalls = 0;
+
+            bool isDisposedBeforeDispose;
+            var isDisposedAfterDispose = false;
+
+            WeakReference weak;
+
+            void LocalFunction()
+            {
+                var unitOfWork = new FakeUnitOfWork(
+                    _mockDbContextFactory.Object,
+                    val =>
+                    {
+                        disposing = val;
+                        disposeCalls++;
+                    },
+                    val => isDisposedAfterDispose = val
+                );
+
+                weak = new WeakReference(unitOfWork, true);
+
+                isDisposedBeforeDispose = unitOfWork.ExposedIsDisposed;
+
+                unitOfWork.Dispose();
+            }
 
             // Act
-            fakeUnitOfWork.ExposedDispose(false);
+            LocalFunction();
 
-            // Assert
+            // Arrange
+            Assert.False(isDisposedBeforeDispose);
+
+            GC.Collect(0, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+
             _mockDbContext
                 .Verify(
                     x => x.Dispose(),
-                    Times.Never
+                    Times.Once
                 );
+
+            Assert.True(disposing);
+            Assert.Equal(1, disposeCalls);
+            Assert.True(isDisposedAfterDispose);
+
+            Assert.False(weak.IsAlive);
         }
 
         [Fact]
         public void Dispose_WhenIsDisposed()
         {
             // Arrange
-            var fakeUnitOfWork = (FakeUnitOfWork) _unitOfWork;
+            _unitOfWork.Dispose();
 
             // Act
-            fakeUnitOfWork.Dispose();
-
-            fakeUnitOfWork.ExposedDispose(true);
+            _unitOfWork.ExposedDispose(true);
 
             // Assert
             _mockDbContext
@@ -203,21 +208,15 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                     x => x.Dispose(),
                     Times.Once
                 );
+
+            Assert.True(_unitOfWork.ExposedIsDisposed);
         }
 
         [Fact]
-        public void Dispose_WhenDbContextIsNull()
+        public void Dispose_WithFalse()
         {
-            // Arrange
-            var mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>(MockBehavior.Strict);
-            mockDbContextFactory
-                .Setup(x => x.CreateDbContext())
-                .Returns(() => null);
-
-            using var fakeUnitOfWork = new FakeUnitOfWork(mockDbContextFactory.Object);
-
-            // Act
-            fakeUnitOfWork.ExposedDispose(true);
+            // Arrange & Act
+            _unitOfWork.ExposedDispose(false);
 
             // Assert
             _mockDbContext
@@ -225,6 +224,23 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                     x => x.Dispose(),
                     Times.Never
                 );
+
+            Assert.False(_unitOfWork.ExposedIsDisposed);
+        }
+
+        [Fact]
+        public void Dispose_WhenDbContextIsNull()
+        {
+            // Arrange
+            _mockDbContextFactory
+                .Setup(x => x.CreateDbContext())
+                .Returns(() => null);
+
+            // Act
+            _unitOfWork.ExposedDispose(true);
+
+            // Assert
+            Assert.True(_unitOfWork.ExposedIsDisposed);
         }
     }
 }

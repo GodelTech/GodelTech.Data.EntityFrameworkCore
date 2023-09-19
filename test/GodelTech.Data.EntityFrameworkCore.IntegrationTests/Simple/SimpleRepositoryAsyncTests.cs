@@ -24,10 +24,14 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             var dataMapper = new FakeDataMapper(autoMapper);
 
             // database
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<FakeDbContext>()
-                .UseInMemoryDatabase($"{nameof(SimpleRepositoryAsyncTests)}{Guid.NewGuid():N}");
+            var dbContextOptions = new DbContextOptionsBuilder<FakeDbContext>()
+                .UseSqlite("DataSource=:memory:")
+                .Options;
 
-            DbContext = new FakeDbContext(dbContextOptionsBuilder.Options, "dbo");
+            DbContext = new FakeDbContext(dbContextOptions, "dbo");
+
+            DbContext.Database.OpenConnection();
+            DbContext.Database.EnsureCreated();
 
             _repositories[typeof(FakeEntity<Guid>)] = new SimpleRepository<FakeEntity<Guid>, Guid>(DbContext, dataMapper);
             _repositories[typeof(FakeEntity<int>)] = new SimpleRepository<FakeEntity<int>, int>(DbContext, dataMapper);
@@ -38,6 +42,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
 
         public void Dispose()
         {
+            DbContext.Database.CloseConnection();
             DbContext.Dispose();
         }
 

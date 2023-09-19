@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GodelTech.Data.EntityFrameworkCore
 {
@@ -30,12 +32,28 @@ namespace GodelTech.Data.EntityFrameworkCore
 
         private void Delete(IList<TEntity> entities)
         {
-            foreach (var entity in entities.Where(x => IsDetached(x)))
+            foreach (var entity in entities.Where(IsDetached))
             {
                 DbSet.Attach(entity);
             }
 
             DbSet.RemoveRange(entities);
+        }
+
+        /// <inheritdoc />
+        public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        {
+            Delete(entity);
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public virtual Task DeleteAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        {
+            Delete(entities);
+
+            return Task.CompletedTask;
         }
     }
 }

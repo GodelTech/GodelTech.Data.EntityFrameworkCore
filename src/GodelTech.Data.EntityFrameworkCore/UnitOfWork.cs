@@ -15,7 +15,6 @@ namespace GodelTech.Data.EntityFrameworkCore
         where TDbContext : DbContext
     {
         private readonly IDictionary<Type, object> _repositories = new Dictionary<Type, object>();
-        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnitOfWork{TDbContext}"/> class.
@@ -29,18 +28,15 @@ namespace GodelTech.Data.EntityFrameworkCore
         }
 
         /// <summary>
-        /// Destructor
-        /// </summary>
-        ~UnitOfWork()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
         /// Gets the database context.
         /// </summary>
         /// <value>The database context.</value>
         protected TDbContext DbContext { get; }
+
+        /// <summary>
+        /// Is disposed.
+        /// </summary>
+        protected bool IsDisposed { get; private set; }
 
         /// <summary>
         /// Commits all changes on the DB.
@@ -99,6 +95,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         public void Dispose()
         {
             Dispose(true);
+            // Stryker disable once statement
             GC.SuppressFinalize(this);
         }
 
@@ -161,15 +158,16 @@ namespace GodelTech.Data.EntityFrameworkCore
                 return;
             }
 
-            if (_isDisposed)
+            if (IsDisposed)
             {
                 // no need to dispose twice.
                 return;
             }
 
-            // free managed resources 
+            // free managed resources
             DbContext?.Dispose();
-            _isDisposed = true;
+
+            IsDisposed = true;
         }
 
         #endregion

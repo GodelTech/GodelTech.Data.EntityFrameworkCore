@@ -30,6 +30,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             repository.Delete(entity);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = DbContext
@@ -63,6 +65,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             repository.Delete(entity);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = DbContext
@@ -94,6 +98,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             repository.Delete(entities);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = DbContext
@@ -127,6 +133,8 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
             repository.Delete(entities);
 
             // Assert
+            DbContext.ChangeTracker.Clear();
+
             Assert.NotNull(defaultKey);
 
             var dbContextResult = DbContext

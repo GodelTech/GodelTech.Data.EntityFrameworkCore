@@ -1,4 +1,7 @@
-﻿namespace GodelTech.Data.EntityFrameworkCore
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace GodelTech.Data.EntityFrameworkCore
 {
     public partial class Repository<TEntity, TKey>
     {
@@ -18,6 +21,15 @@
             }
 
             return entity;
+        }
+
+        /// <inheritdoc />
+        public virtual Task<TEntity> UpdateAsync(TEntity entity, bool startTrackProperties = false,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return Task.FromResult(
+                Update(entity, startTrackProperties)
+            );
         }
     }
 }
