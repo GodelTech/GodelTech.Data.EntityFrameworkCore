@@ -146,6 +146,10 @@ dotnet_diagnostic.IDE0160.severity = none
 dotnet_diagnostic.IDE0090.severity = none
 # IDE0046: Use conditional expression for return
 dotnet_diagnostic.IDE0046.severity = none
+# IDE0028: Use collection initializers or expressions
+dotnet_diagnostic.IDE0028.severity = none
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
 
 [*.cs]
 csharp_style_namespace_declarations = file_scoped

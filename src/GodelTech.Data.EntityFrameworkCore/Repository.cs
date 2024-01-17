@@ -94,7 +94,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <returns><cref>IQueryable{TEntity}</cref>.</returns>
         protected virtual IQueryable<TEntity> PagedResultQuery(QueryParameters<TEntity, TKey> queryParameters)
         {
-            if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
+            ArgumentNullException.ThrowIfNull(queryParameters);
 
             if (queryParameters.Page == null) throw new ArgumentException("Page can't be null.", nameof(queryParameters));
 
