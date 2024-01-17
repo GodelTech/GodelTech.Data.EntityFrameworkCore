@@ -4,13 +4,15 @@
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <PackageId>GodelTech.Data.EntityFrameworkCore</PackageId>
     <VersionPrefix>3.0.1</VersionPrefix>
-    <Authors>v.rodchenko</Authors>
+    <Authors>Vladimir Rodchenko</Authors>
     <Company>Godel Technologies</Company>
     <Description>Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.</Description>
     <Copyright>Godel Technologies 2020</Copyright>
-    <PackageLicenseUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore/wiki</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://www.gravatar.com/avatar/839234621070de51e7b9cabd5ceee8fe?s=64</PackageIconUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/GodelTech/GodelTech.Data.EntityFrameworkCore</RepositoryUrl>
     <PackageTags>Entity Framework Core Data UnitOfWork Repository Entity</PackageTags>
 
@@ -28,6 +30,17 @@
     <!-- SonarQube needs this -->
     <ProjectGuid>{00000000-0000-0000-0000-000000000010}</ProjectGuid>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.26" />
