@@ -22,7 +22,7 @@ namespace GodelTech.Data.EntityFrameworkCore
         /// <param name="dbContextFactory">The database context factory.</param>
         protected UnitOfWork(IDbContextFactory<TDbContext> dbContextFactory)
         {
-            if (dbContextFactory == null) throw new ArgumentNullException(nameof(dbContextFactory));
+            ArgumentNullException.ThrowIfNull(dbContextFactory);
 
             DbContext = dbContextFactory.CreateDbContext();
         }

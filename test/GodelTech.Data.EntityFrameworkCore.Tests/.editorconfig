@@ -14,3 +14,6 @@ dotnet_diagnostic.IDE0041.severity = none
 
 # IDE0160: Convert to block-scoped namespace
 csharp_style_namespace_declarations = block_scoped
+
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = none

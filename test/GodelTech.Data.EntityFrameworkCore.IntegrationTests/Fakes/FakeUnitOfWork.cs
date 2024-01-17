@@ -12,9 +12,9 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
             IDbContextFactory<FakeDbContext> dbContextFactory)
             : base(dbContextFactory)
         {
-            if (fakeGuidEntityRepository == null) throw new ArgumentNullException(nameof(fakeGuidEntityRepository));
-            if (fakeIntEntityRepository == null) throw new ArgumentNullException(nameof(fakeIntEntityRepository));
-            if (fakeStringEntityRepository == null) throw new ArgumentNullException(nameof(fakeStringEntityRepository));
+            ArgumentNullException.ThrowIfNull(fakeGuidEntityRepository);
+            ArgumentNullException.ThrowIfNull(fakeIntEntityRepository);
+            ArgumentNullException.ThrowIfNull(fakeStringEntityRepository);
 
             RegisterRepository(fakeGuidEntityRepository(DbContext));
             RegisterRepository(fakeIntEntityRepository(DbContext));

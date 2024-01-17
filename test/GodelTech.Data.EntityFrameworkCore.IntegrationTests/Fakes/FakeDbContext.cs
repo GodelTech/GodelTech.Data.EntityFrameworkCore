@@ -13,7 +13,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Fakes
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
+            ArgumentNullException.ThrowIfNull(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
 
