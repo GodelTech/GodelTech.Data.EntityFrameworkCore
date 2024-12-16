@@ -1,6 +1,7 @@
 # GodelTech.Data.EntityFrameworkCore
 
-Library to access database with Unit of Work, Repository and Entity classes for Entity Framework Core.
+# Description
+odelTech.Data.EntityFrameworkCore is a .NET library that provides access to databases using the Unit of Work, Repository, and Entity design patterns specifically for Entity Framework Core. It implements the interfaces from [GodelTech.Data](https://github.com/GodelTech/GodelTech.Data) to facilitate efficient data operations within Entity Framework Core environments.
 
 ## Overview
 `GodelTech.Data.EntityFrameworkCore` implements [GodelTech.Data](https://github.com/GodelTech/GodelTech.Data) interfaces for Unit of Work and Repository pattern with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)
@@ -25,3 +26,6 @@ Library to access database with Unit of Work, Repository and Entity classes for 
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/GodelTech.Data.EntityFrameworkCore?style=flat-square)](https://www.nuget.org/packages/GodelTech.Data.EntityFrameworkCore)
 [![Nuget](https://img.shields.io/nuget/dt/GodelTech.Data.EntityFrameworkCore?style=flat-square)](https://www.nuget.org/packages/GodelTech.Data.EntityFrameworkCore)
 [![Libraries.io dependency status for specific release](https://img.shields.io/librariesio/release/NuGet/GodelTech.Data.EntityFrameworkCore/latest?style=flat-square)](https://libraries.io/NuGet/GodelTech.Data.EntityFrameworkCore)
+
+# License
+This project is licensed under the MIT License. See the LICENSE file for more details.
