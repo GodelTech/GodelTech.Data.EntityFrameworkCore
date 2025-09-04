@@ -20,7 +20,7 @@ resources:
 extends:
   template: '.azuredevops/.NET/NuGet.yml@GodelTech'
   parameters:
-    dotNetSDKVersions: [ '6.0.x', '7.0.x', '8.0.x' ]
+    dotNetSDKVersions: [ '8.0.x', '9.0.x' ]
     mutationTestingProjects:
     - displayName: 'GodelTech.Data.EntityFrameworkCore'
       folderPath: '/src/GodelTech.Data.EntityFrameworkCore'

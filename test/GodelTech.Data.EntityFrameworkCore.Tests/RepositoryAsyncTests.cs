@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using Moq;
@@ -20,7 +19,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
         public Repository<TEntity, TKey> GetRepository<TEntity, TKey>(ICollection<TEntity> entities)
             where TEntity : class, IEntity<TKey>
         {
-            var mockDbSet = entities.AsQueryable().BuildMockDbSet();
+            var mockDbSet = entities.BuildMockDbSet();
 
             _mockDbContext
                 .Setup(x => x.Set<TEntity>())

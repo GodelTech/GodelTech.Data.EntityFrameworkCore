@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using GodelTech.Data.EntityFrameworkCore.Tests.Fakes;
-using MockQueryable.Moq;
+using MockQueryable;
 using Moq;
 using Xunit;
 
@@ -236,6 +236,7 @@ namespace GodelTech.Data.EntityFrameworkCore.Tests
                                 Name = x.Name
                             }
                         )
+                        .ToList()
                         .BuildMock()
                 );
 
