@@ -14,7 +14,7 @@ namespace GodelTech.Data.EntityFrameworkCore
     public abstract class UnitOfWork<TDbContext> : IUnitOfWork, IChangeTracker
         where TDbContext : DbContext
     {
-        private readonly IDictionary<Type, object> _repositories = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnitOfWork{TDbContext}"/> class.
