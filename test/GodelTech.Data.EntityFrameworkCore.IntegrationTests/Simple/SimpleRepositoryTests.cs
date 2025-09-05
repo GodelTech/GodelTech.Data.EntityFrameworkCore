@@ -9,7 +9,7 @@ namespace GodelTech.Data.EntityFrameworkCore.IntegrationTests.Simple
 {
     public sealed partial class SimpleRepositoryTests : IDisposable
     {
-        private readonly IDictionary<Type, object> _repositories = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
 
         public SimpleRepositoryTests()
         {
